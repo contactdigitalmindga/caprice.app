@@ -1,0 +1,54 @@
+{
+  "name": "RestaurantInfo",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "default": "CAPRICE"
+    },
+    "description": {
+      "type": "string"
+    },
+    "address": {
+      "type": "string"
+    },
+    "city": {
+      "type": "string",
+      "default": "Libreville"
+    },
+    "phone": {
+      "type": "string"
+    },
+    "hours": {
+      "type": "string"
+    },
+    "instagram": {
+      "type": "string"
+    },
+    "hero_image": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "name",
+    "city"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": null,
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

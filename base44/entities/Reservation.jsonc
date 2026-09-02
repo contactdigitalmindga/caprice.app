@@ -1,0 +1,80 @@
+{
+  "name": "Reservation",
+  "type": "object",
+  "properties": {
+    "reference": {
+      "type": "string"
+    },
+    "customer_name": {
+      "type": "string"
+    },
+    "phone": {
+      "type": "string"
+    },
+    "date": {
+      "type": "string",
+      "format": "date"
+    },
+    "time": {
+      "type": "string"
+    },
+    "guests": {
+      "type": "number"
+    },
+    "table_preference": {
+      "type": "string"
+    },
+    "comment": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "confirmee",
+        "terminee",
+        "annulee"
+      ],
+      "default": "confirmee"
+    }
+  },
+  "required": [
+    "reference",
+    "customer_name",
+    "phone",
+    "date",
+    "time",
+    "guests"
+  ],
+  "rls": {
+    "create": null,
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

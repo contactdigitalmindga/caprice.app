@@ -1,0 +1,92 @@
+{
+  "name": "Order",
+  "type": "object",
+  "properties": {
+    "reference": {
+      "type": "string"
+    },
+    "customer_name": {
+      "type": "string"
+    },
+    "phone": {
+      "type": "string"
+    },
+    "fulfillment": {
+      "type": "string",
+      "enum": [
+        "sur_place",
+        "livraison",
+        "emporter"
+      ]
+    },
+    "address": {
+      "type": "string"
+    },
+    "scheduled_for": {
+      "type": "string"
+    },
+    "subtotal": {
+      "type": "number"
+    },
+    "delivery_fee": {
+      "type": "number",
+      "default": 0
+    },
+    "total": {
+      "type": "number"
+    },
+    "payment_method": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "confirmee",
+        "preparation",
+        "en_route",
+        "livree",
+        "annulee"
+      ],
+      "default": "confirmee"
+    }
+  },
+  "required": [
+    "reference",
+    "customer_name",
+    "phone",
+    "fulfillment",
+    "total"
+  ],
+  "rls": {
+    "create": null,
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
