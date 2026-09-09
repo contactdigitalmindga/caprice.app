@@ -48,6 +48,9 @@
         "annulee"
       ],
       "default": "confirmee"
+    },
+    "qr_code": {
+      "type": "string"
     }
   },
   "required": [
