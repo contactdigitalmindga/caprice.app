@@ -8,7 +8,7 @@ const fromPath=p=>{if(!p||p==='/')return'home';const s=p.split('/')[1];return s=
 export default function AppContext({children}){
   const navigate=useNavigate(),location=useLocation();
   const screen=fromPath(location.pathname);
-  const setScreen=id=>navigate(PATHS[id]||'/');const tab=TAB_OF[screen]||'home';const tabPaths=useRef({...TAB_BASES});useEffect(()=>{const t=TAB_OF[screen];if(t)tabPaths.current[t]=location.pathname},[screen,location.pathname]);const switchTab=id=>{if(id===tab){tabPaths.current[id]=TAB_BASES[id];navigate(TAB_BASES[id])}else navigate(tabPaths.current[id]||TAB_BASES[id]||'/')};
+  const setScreen=id=>navigate(PATHS[id]||'/');const tab=TAB_OF[screen]||'home';const tabPaths=useRef({...TAB_BASES});useEffect(()=>{const t=TAB_OF[screen];if(t&&TAB_BASES[t]===location.pathname)tabPaths.current[t]=location.pathname},[screen,location.pathname]);const switchTab=id=>{if(id===tab){tabPaths.current[id]=TAB_BASES[id];navigate(TAB_BASES[id])}else navigate(tabPaths.current[id]||TAB_BASES[id]||'/')};
   const [products,setProducts]=useState([]),[cart,setCart]=useState([]),[fav,setFav]=useState([]),[selected,setSelected]=useState(null),[loading,setLoading]=useState(true),[user,setUser]=useState(null);
   useEffect(()=>{base44.entities.Product.list().then(setProducts).finally(()=>setLoading(false))},[]);
   useEffect(()=>{base44.auth.isAuthenticated().then(async(ok)=>{if(ok){try{setUser(await base44.auth.me())}catch{setUser(null)}}})},[]);
