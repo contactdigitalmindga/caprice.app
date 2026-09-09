@@ -1,2 +1,2 @@
 import React from'react';import{ArrowLeft}from'lucide-react';import{useNavigate}from'react-router-dom';
-export default function BackArrow({to='home',className='back-arrow'}){const navigate=useNavigate();return <button className={className} onClick={()=>window.history.length>1?navigate(-1):navigate(to==='home'?'/' :'/'+to)}><ArrowLeft size={20}/></button>;}
+export default function BackArrow({to='home',className='back-arrow',force=false}){const navigate=useNavigate();const go=()=>to==='home'?'/' :'/'+to;return <button className={className} onClick={()=>force?navigate(go,{replace:true}):window.history.length>1?navigate(-1):navigate(go)}><ArrowLeft size={20}/></button>;}
