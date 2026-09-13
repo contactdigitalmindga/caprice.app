@@ -22,6 +22,7 @@ export default async function(req) {
     const items = await base44.asServiceRole.entities.OrderItem.filter({ order_id: order.id });
     return Response.json({
       reference: order.reference,
+      qr_code: order.qr_code,
       status: order.status,
       customer_name: order.customer_name,
       phone: order.phone,
