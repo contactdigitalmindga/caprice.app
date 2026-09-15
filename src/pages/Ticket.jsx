@@ -1,0 +1,150 @@
+import React, { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import { Clock, MapPin, Calendar, Users, Utensils, Truck, ShoppingBag, X, Check } from 'lucide-react';
+import { base44 } from '@/api/base44Client';
+import { fmt } from '@/lib/caprice';
+
+const FULFILLMENT = { sur_place: 'Sur place', livraison: 'Livraison', emporter: 'À emporter' };
+const STATUS = { confirmee: 'Confirmée', preparation: 'En préparation', en_route: 'En route', livree: 'Livrée', terminee: 'Terminée', annulee: 'Annulée' };
+
+export default function Ticket() {
+  const [searchParams] = useSearchParams();
+  const ref = searchParams.get('ref');
+  const type = searchParams.get('type') || 'order';
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [err, setErr] = useState(null);
+
+  useEffect(() => {
+    const load = async () => {
+      if (!ref) { setErr('Référence manquante'); setLoading(false); return; }
+      try {
+        const fn = type === 'reservation' ? 'getReservationStatus' : 'getOrderStatus';
+        const res = await base44.functions.invoke(fn, { reference: ref });
+        if (res.data && res.data.reference) setData(res.data);
+        else setErr(res.data?.error || 'Introuvable');
+      } catch { setErr('Erreur de chargement'); }
+      finally { setLoading(false); }
+    };
+    load();
+  }, [ref, type]);
+
+  const isRes = type === 'reservation';
+  const reference = data?.reference || ref || '';
+  const ticketUrl = `https://caprice-app.base44.app/ticket?ref=${reference}${isRes ? '&type=reservation' : ''}`;
+  const qr = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&margin=8&data=${encodeURIComponent(ticketUrl)}`;
+
+  if (loading) return (
+    <div className="min-h-screen flex items-center justify-center" style={{ background: '#f7f2e9' }}>
+      <div className="w-10 h-10 border-4 rounded-full animate-spin" style={{ borderColor: '#e8ddcf', borderTopColor: '#9d7844' }} />
+    </div>
+  );
+
+  if (err) return (
+    <div className="min-h-screen flex flex-col items-center justify-center gap-3" style={{ background: '#f7f2e9', color: '#211a15', fontFamily: 'Georgia, serif' }}>
+      <X size={48} color="#9d7844" />
+      <h1 style={{ fontSize: 24 }}>{err}</h1>
+      <p style={{ color: '#655b52', fontSize: 14 }}>Référence: {ref}</p>
+    </div>
+  );
+
+  const Icon = isRes ? Calendar : (data?.fulfillment === 'sur_place' ? Utensils : data?.fulfillment === 'livraison' ? Truck : ShoppingBag);
+
+  return (
+    <div className="min-h-screen flex justify-center" style={{ background: '#f7f2e9', padding: '20px', fontFamily: 'ui-sans-serif, system-ui, sans-serif' }}>
+      <div style={{ width: '100%', maxWidth: 420, background: '#fff', borderRadius: 24, overflow: 'hidden', boxShadow: '0 10px 40px rgba(76,54,34,0.12)', marginTop: 20, marginBottom: 20 }}>
+        {/* Header */}
+        <div style={{ background: '#211a15', color: '#fff', padding: '28px 24px', textAlign: 'center' }}>
+          <div style={{ fontFamily: 'Georgia, serif', fontSize: 28, letterSpacing: '0.05em' }}>CAPRICE</div>
+          <div style={{ fontSize: 11, letterSpacing: '0.3em', color: '#c9a35f', marginTop: 4 }}>{isRes ? 'RÉSERVATION' : 'COMMANDE'}</div>
+        </div>
+
+        {/* Reference + Status */}
+        <div style={{ padding: '24px', borderBottom: '1px dashed #e8ddcf', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div>
+            <div style={{ fontSize: 11, color: '#655b52', letterSpacing: '0.1em' }}>RÉFÉRENCE</div>
+            <div style={{ fontSize: 18, fontWeight: 700, color: '#211a15', marginTop: 2 }}>#{reference}</div>
+          </div>
+          <div style={{ textAlign: 'right' }}>
+            <div style={{ fontSize: 11, color: '#655b52', letterSpacing: '0.1em' }}>STATUT</div>
+            <div style={{ fontSize: 14, fontWeight: 600, color: data?.status === 'annulee' ? '#c97171' : '#9d7844', marginTop: 2 }}>{STATUS[data?.status] || data?.status}</div>
+          </div>
+        </div>
+
+        {/* QR Code */}
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '24px', borderBottom: '1px dashed #e8ddcf' }}>
+          <img src={qr} alt={`QR ${reference}`} style={{ width: 160, height: 160, borderRadius: 12 }} />
+          <div style={{ fontSize: 11, color: '#655b52', marginTop: 10, textAlign: 'center' }}>Scannez pour vérifier ce ticket</div>
+        </div>
+
+        {isRes ? (
+          <div style={{ padding: '24px' }}>
+            <div style={{ display: 'grid', gap: 16 }}>
+              <Row icon={<Calendar size={18} color="#9d7844" />} label="Date" value={data?.date} />
+              <Row icon={<Clock size={18} color="#9d7844" />} label="Heure" value={data?.time} />
+              <Row icon={<Users size={18} color="#9d7844" />} label="Personnes" value={`${data?.guests} couverts`} />
+              {data?.table_preference && <Row icon={<MapPin size={18} color="#9d7844" />} label="Table" value={data.table_preference} />}
+            </div>
+            {data?.comment && (
+              <div style={{ marginTop: 16, padding: 16, background: '#f7f2e9', borderRadius: 14 }}>
+                <div style={{ fontSize: 11, color: '#655b52', marginBottom: 4 }}>Note</div>
+                <div style={{ fontSize: 14, color: '#211a15' }}>{data.comment}</div>
+              </div>
+            )}
+            <CustomerCard name={data?.customer_name} phone={data?.phone} />
+          </div>
+        ) : (
+          <div style={{ padding: '24px' }}>
+            <Row icon={<Icon size={18} color="#9d7844" />} label="Mode" value={FULFILLMENT[data?.fulfillment] || data?.fulfillment} />
+            {data?.scheduled_for && <div style={{ marginTop: 16 }}><Row icon={<Clock size={18} color="#9d7844" />} label="Programmé pour" value={data.scheduled_for} /></div>}
+
+            <div style={{ fontSize: 11, color: '#655b52', letterSpacing: '0.1em', margin: '24px 0 12px' }}>ARTICLES</div>
+            <div style={{ display: 'grid', gap: 12 }}>
+              {data?.items?.length ? data.items.map((v, i) => (
+                <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12 }}>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: 14, fontWeight: 600 }}>{v.quantity} × {v.product_name}</div>
+                    {v.options?.length > 0 && <div style={{ fontSize: 12, color: '#655b52', marginTop: 2 }}>{v.options.join(', ')}</div>}
+                  </div>
+                  <div style={{ fontSize: 14, fontWeight: 600, whiteSpace: 'nowrap' }}>{fmt((v.unit_price || 0) * (v.quantity || 1))}</div>
+                </div>
+              )) : <div style={{ fontSize: 13, color: '#655b52' }}>Aucun article</div>}
+            </div>
+
+            <div style={{ marginTop: 20, paddingTop: 16, borderTop: '1px dashed #e8ddcf', display: 'flex', justifyContent: 'space-between', fontSize: 18, fontWeight: 700 }}>
+              <span>Total</span><span>{fmt(data?.total || 0)}</span>
+            </div>
+
+            <CustomerCard name={data?.customer_name} phone={data?.phone} address={data?.address} />
+          </div>
+        )}
+
+        {/* Footer */}
+        <div style={{ padding: '20px 24px', background: '#f7f2e9', textAlign: 'center' }}>
+          <div style={{ fontFamily: 'Georgia, serif', fontSize: 14, color: '#9d7844' }}>CAPRICE</div>
+          <div style={{ fontSize: 11, color: '#655b52', marginTop: 4 }}>Libreville, Gabon · Bon appétit</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Row({ icon, label, value }) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+      <div style={{ width: 40, height: 40, borderRadius: 12, background: '#f7f2e9', display: 'grid', placeItems: 'center', flexShrink: 0 }}>{icon}</div>
+      <div><div style={{ fontSize: 11, color: '#655b52' }}>{label}</div><div style={{ fontSize: 15, fontWeight: 600, color: '#211a15', marginTop: 2 }}>{value}</div></div>
+    </div>
+  );
+}
+
+function CustomerCard({ name, phone, address }) {
+  return (
+    <div style={{ marginTop: 20, padding: 16, background: '#211a15', borderRadius: 14, color: '#fff' }}>
+      <div style={{ fontSize: 11, color: '#c9a35f' }}>Client</div>
+      <div style={{ fontSize: 15, fontWeight: 600, marginTop: 2 }}>{name}</div>
+      <div style={{ fontSize: 13, color: '#cdbca5', marginTop: 2 }}>{phone}</div>
+      {address && <div style={{ fontSize: 13, color: '#cdbca5', marginTop: 4 }}>{address}</div>}
+    </div>
+  );
+}

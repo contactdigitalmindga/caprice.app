@@ -14,7 +14,7 @@ export default function TrackScreen(){
   };load()},[ref,type]);
   const isRes=type==='reservation';
   const reference=o?.reference||ref||'';
-  const trackUrl=`https://caprice-app.base44.app/track?ref=${reference}${isRes?'&type=reservation':''}`;
+  const trackUrl=`https://caprice-app.base44.app/ticket?ref=${reference}${isRes?'&type=reservation':''}`;
   const qrData=o?.qr_code||trackUrl;
   const qr=qrData?`https://api.qrserver.com/v1/create-qr-code/?size=240x240&margin=8&data=${encodeURIComponent(qrData)}`:'';
   const currentStep=STATUS_STEP[o?.status]??0;
