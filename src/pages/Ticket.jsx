@@ -98,21 +98,22 @@ export default function Ticket() {
             <Row icon={<Icon size={18} color="#9d7844" />} label="Mode" value={FULFILLMENT[data?.fulfillment] || data?.fulfillment} />
             {data?.scheduled_for && <div style={{ marginTop: 16 }}><Row icon={<Clock size={18} color="#9d7844" />} label="Programmé pour" value={data.scheduled_for} /></div>}
 
-            <div style={{ fontSize: 11, color: '#655b52', letterSpacing: '0.1em', margin: '24px 0 12px' }}>ARTICLES</div>
-            <div style={{ display: 'grid', gap: 12 }}>
+            <div style={{ fontSize: 12, color: '#211a15', letterSpacing: '0.15em', fontWeight: 700, margin: '24px 0 14px' }}>ARTICLES</div>
+            <div style={{ display: 'grid', gap: 10 }}>
               {data?.items?.length ? data.items.map((v, i) => (
-                <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12 }}>
+                <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12, padding: '14px 16px', background: '#f7f2e9', borderRadius: 14, border: '1px solid #e8ddcf' }}>
                   <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: 14, fontWeight: 600 }}>{v.quantity} × {v.product_name}</div>
-                    {v.options?.length > 0 && <div style={{ fontSize: 12, color: '#655b52', marginTop: 2 }}>{v.options.join(', ')}</div>}
+                    <div style={{ fontSize: 17, fontWeight: 800, color: '#211a15' }}>{v.quantity} × {v.product_name}</div>
+                    {v.options?.length > 0 && <div style={{ fontSize: 13, color: '#655b52', marginTop: 4, fontWeight: 500 }}>{v.options.join(', ')}</div>}
                   </div>
-                  <div style={{ fontSize: 14, fontWeight: 600, whiteSpace: 'nowrap' }}>{fmt((v.unit_price || 0) * (v.quantity || 1))}</div>
+                  <div style={{ fontSize: 17, fontWeight: 800, color: '#211a15', whiteSpace: 'nowrap' }}>{fmt((v.unit_price || 0) * (v.quantity || 1))}</div>
                 </div>
-              )) : <div style={{ fontSize: 13, color: '#655b52' }}>Aucun article</div>}
+              )) : <div style={{ fontSize: 14, color: '#655b52', padding: '14px', background: '#f7f2e9', borderRadius: 14 }}>Aucun article</div>}
             </div>
 
-            <div style={{ marginTop: 20, paddingTop: 16, borderTop: '1px dashed #e8ddcf', display: 'flex', justifyContent: 'space-between', fontSize: 18, fontWeight: 700 }}>
-              <span>Total</span><span>{fmt(data?.total || 0)}</span>
+            <div style={{ marginTop: 20, paddingTop: 18, borderTop: '2px solid #211a15', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ fontSize: 20, fontWeight: 800, color: '#211a15' }}>Total</span>
+              <span style={{ fontSize: 24, fontWeight: 800, color: '#211a15' }}>{fmt(data?.total || 0)}</span>
             </div>
 
             <CustomerCard name={data?.customer_name} phone={data?.phone} address={data?.address} />
@@ -140,11 +141,11 @@ function Row({ icon, label, value }) {
 
 function CustomerCard({ name, phone, address }) {
   return (
-    <div style={{ marginTop: 20, padding: 16, background: '#211a15', borderRadius: 14, color: '#fff' }}>
-      <div style={{ fontSize: 11, color: '#c9a35f' }}>Client</div>
-      <div style={{ fontSize: 15, fontWeight: 600, marginTop: 2 }}>{name}</div>
-      <div style={{ fontSize: 13, color: '#cdbca5', marginTop: 2 }}>{phone}</div>
-      {address && <div style={{ fontSize: 13, color: '#cdbca5', marginTop: 4 }}>{address}</div>}
+    <div style={{ marginTop: 20, padding: 18, background: '#211a15', borderRadius: 14, color: '#fff' }}>
+      <div style={{ fontSize: 11, color: '#c9a35f', letterSpacing: '0.1em', fontWeight: 700 }}>CLIENT</div>
+      <div style={{ fontSize: 18, fontWeight: 800, marginTop: 4, color: '#fff' }}>{name}</div>
+      <div style={{ fontSize: 15, color: '#e4c98a', marginTop: 4, fontWeight: 600 }}>{phone}</div>
+      {address && <div style={{ fontSize: 14, color: '#cdbca5', marginTop: 6 }}>{address}</div>}
     </div>
   );
 }
