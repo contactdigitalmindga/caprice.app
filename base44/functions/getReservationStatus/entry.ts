@@ -20,6 +20,7 @@ export default async function(req) {
     }
     const r = reservations[0];
     return Response.json({
+      id: r.id,
       reference: r.reference,
       qr_code: r.qr_code,
       status: r.status,
