@@ -1,0 +1,2 @@
+import React from 'react';
+export default function BrandHeader({subtitle='Good Time, Great Taste'}){return <header className="flex items-center justify-between px-5 pt-7 pb-1"><div><p className="text-xs tracking-widest text-stone-500">CAPRICE</p><h2 className="font-display text-lg">{subtitle}</h2></div></header>}

@@ -9,7 +9,7 @@ const fromPath=p=>{if(!p||p==='/')return'home';const s=p.split('/')[1];return s=
 export default function AppContext({children}){
   const navigate=useNavigate(),location=useLocation();
   const screen=fromPath(location.pathname);
-  const setScreen=id=>navigate(PATHS[id]||'/');const tab=TAB_OF[screen]||'home';const tabPaths=useRef({...TAB_BASES});useEffect(()=>{const t=TAB_OF[screen];if(t&&TAB_BASES[t]===location.pathname)tabPaths.current[t]=location.pathname},[screen,location.pathname]);const switchTab=id=>{if(id===tab){tabPaths.current[id]=TAB_BASES[id];navigate(TAB_BASES[id])}else navigate(tabPaths.current[id]||TAB_BASES[id]||'/')};
+  const tab=TAB_OF[screen]||'home';const tabStacks=useRef({home:['/'],menu:['/menu'],reserve:['/reserve'],orders:['/orders'],profile:['/profile']});const setScreen=id=>{const p=PATHS[id]||'/';const t=TAB_OF[fromPath(p)]||'home';if(tabStacks.current[t][tabStacks.current[t].length-1]!==p)tabStacks.current[t]=[...tabStacks.current[t],p];navigate(p)};useEffect(()=>{const t=TAB_OF[screen];if(t){const s=tabStacks.current[t];if(s[s.length-1]!==location.pathname)tabStacks.current[t]=[...s.filter(x=>x!==location.pathname),location.pathname]}},[screen,location.pathname]);const switchTab=id=>{if(id===tab){tabStacks.current[id]=[TAB_BASES[id]];navigate(TAB_BASES[id])}else{const s=tabStacks.current[id];navigate(s[s.length-1]||TAB_BASES[id])}};
   const [products,setProducts]=useState([]),[cart,setCart]=useState([]),[fav,setFav]=useState([]),[selected,setSelected]=useState(null),[loading,setLoading]=useState(true),[user,setUser]=useState(null);
   useEffect(()=>{base44.entities.Product.list().then(p=>{setProducts(p);preloadProducts(p)}).finally(()=>setLoading(false))},[]);
   useEffect(()=>{base44.auth.isAuthenticated().then(async(ok)=>{if(ok){try{setUser(await base44.auth.me())}catch{setUser(null)}}})},[]);
@@ -19,7 +19,8 @@ export default function AppContext({children}){
   const goLogin=()=>navigate('/login');
   const goRegister=()=>navigate('/register');
   const add=(p,q=1,opt='')=>setCart(x=>{const i=x.findIndex(v=>v.id===p.id&&v.opt===opt);return i<0?[...x,{...p,q,opt}]:x.map((v,n)=>n===i?{...v,q:v.q+q}:v)});
+  const revertCart=prev=>setCart(prev);
   const open=p=>{setSelected(p);navigate(`/detail/${p.id}`)};
   const toggle=p=>setFav(x=>x.some(v=>v.id===p.id)?x.filter(v=>v.id!==p.id):[...x,p]);
-  return <C.Provider value={{screen,setScreen,switchTab,tab,products,setProducts,refreshProducts,cart,setCart,fav,toggle,selected,open,add,loading,user,refreshUser,logout,goLogin,goRegister}}>{children}</C.Provider>;
+  return <C.Provider value={{screen,setScreen,switchTab,tab,products,setProducts,refreshProducts,cart,setCart,revertCart,fav,toggle,selected,open,add,loading,user,refreshUser,logout,goLogin,goRegister}}>{children}</C.Provider>;
 }
