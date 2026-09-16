@@ -59,7 +59,7 @@ const AuthenticatedApp = () => {
 function App() {
   useEffect(() => {
     const mq = window.matchMedia('(prefers-color-scheme: dark)');
-    const apply = () => document.documentElement.classList.toggle('dark', mq.matches);
+    const apply = () => { document.documentElement.classList.toggle('dark', mq.matches); document.documentElement.classList.toggle('light', !mq.matches); };
     apply();
     mq.addEventListener('change', apply);
     return () => mq.removeEventListener('change', apply);
