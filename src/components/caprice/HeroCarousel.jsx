@@ -1,11 +1,4 @@
-import React,{useState,useEffect,useCallback}from'react';import{Image}from'@/components/ui/image';
-
-const SLIDES=[
-  'https://media.base44.com/images/public/6a980008224694e817562d88/3a0e8976c_caf69028-5e23-4744-ba70-d2ffecc25954.jpeg',
-  'https://media.base44.com/images/public/6a980008224694e817562d88/fedb1cfaf_090501d0-6bab-4f9d-aa2a-22349eda0572.jpeg',
-  'https://media.base44.com/images/public/6a980008224694e817562d88/bd0f59773_2758ed08-8560-440d-93d5-9ddc5bd6a45b.jpeg',
-  'https://media.base44.com/images/public/6a980008224694e817562d88/e4464f349_6243cd82-74d7-4311-972c-1f5ee09cf5e7.jpeg'
-];
+import React,{useState,useEffect,useCallback}from'react';import{Image}from'@/components/ui/image';import{heroSlides as SLIDES}from'@/lib/caprice';
 
 export default function HeroCarousel(){
   const[active,setActive]=useState(0);
