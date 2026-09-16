@@ -20,10 +20,6 @@ export default function HeroCarousel(){
         <Image src={s} alt={`Ambiance Caprice ${i+1}`} loading={i===0?'eager':'lazy'} className="h-full w-full object-cover"/>
       </div>
     ))}
-    <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-1.5 z-[2]">
-      {SLIDES.map((_,i)=>(
-        <button key={i} aria-label={`Image ${i+1}`} onClick={()=>setActive(i)} className="h-1.5 rounded-full transition-all duration-500" style={{width:i===active?24:6,background:i===active?'rgba(255,255,255,.95)':'rgba(255,255,255,.5)'}}/>
-      ))}
-    </div>
+
   </div>;
 }
