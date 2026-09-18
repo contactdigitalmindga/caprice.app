@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
-import { Clock, MapPin, Calendar, Users, Utensils, Truck, ShoppingBag, X, Check } from 'lucide-react';
+import { useSearchParams, Link } from 'react-router-dom';
+import { Clock, MapPin, Calendar, Users, Utensils, Truck, ShoppingBag, X, Check, ArrowLeft } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { fmt } from '@/lib/caprice';
 
@@ -51,6 +51,10 @@ export default function Ticket() {
   const Icon = isRes ? Calendar : (data?.fulfillment === 'sur_place' ? Utensils : data?.fulfillment === 'livraison' ? Truck : ShoppingBag);
 
   return (
+    <>
+    <Link to="/" style={{ position: 'fixed', top: 16, left: 16, zIndex: 50, display: 'inline-flex', alignItems: 'center', gap: 6, color: 'var(--caprice-accent)', fontWeight: 600, fontSize: 14, textDecoration: 'none', background: 'var(--caprice-card)', padding: '10px 14px', borderRadius: 12, boxShadow: '0 2px 10px rgba(0,0,0,0.1)' }}>
+      <ArrowLeft size={18} /> Retour à l'application
+    </Link>
     <div className="min-h-screen flex justify-center" style={{ background: 'var(--caprice-bg)', padding: '20px', fontFamily: 'ui-sans-serif, system-ui, sans-serif' }}>
       <div style={{ width: '100%', maxWidth: 420, background: 'var(--caprice-card)', borderRadius: 24, overflow: 'hidden', boxShadow: '0 10px 40px rgba(76,54,34,0.12)', marginTop: 20, marginBottom: 20 }}>
         {/* Header */}
@@ -127,6 +131,7 @@ export default function Ticket() {
         </div>
       </div>
     </div>
+    </>
   );
 }
 

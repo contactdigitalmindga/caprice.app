@@ -4,7 +4,7 @@ const FAQS=[
 ['Quels sont les délais de livraison ?','La livraison à Libreville prend généralement 25 à 35 minutes. Pour les commandes sur place ou à emporter, comptez 15 à 20 minutes de préparation.'],
 ['Comment suivre ma commande ?','Après confirmation, vous recevez un numéro de commande et un QR code scannable. Suivez l\'état (confirmée, préparation, en route, livrée) dans la section « Mes commandes » ou via le QR code.'],
 ['Puis-je modifier ou annuler ma commande ?','Vous pouvez annuler tant que le statut est « confirmée ». Contactez-nous rapidement au numéro affiché dans l\'application.'],
-['Quels moyens de paiement acceptez-vous ?','Carte bancaire, Mobile Money, Airtel Money et paiement à la réception.'],
+['Quels moyens de paiement acceptez-vous ?','Mobile Money (Airtel Money, Moov Money) ou paiement sur place.'],
 ['Comment réserver une table ?','Rendez-vous dans la section « Réserver », choisissez la date, l\'heure et le nombre de convives, puis confirmez.'],
 ['Mon QR code ne fonctionne pas, que faire ?','Chaque QR code est unique et lié à votre numéro de commande. Assurez-vous de scanner le bon code. Si le problème persiste, contactez-nous.'],
 ['Proposez-vous des options végétariennes ?','Oui, plusieurs plats végétariens sont disponibles. Filtrez la carte ou demandez conseil à notre équipe.']
