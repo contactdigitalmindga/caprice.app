@@ -6,10 +6,9 @@ export default function TrackScreen(){
   const[o,setO]=useState(null),[loading,setLoading]=useState(true),[err,setErr]=useState(null);
   useEffect(()=>{const load=async()=>{
     if(ref){try{
-      if(type==='reservation'){const res=await base44.functions.invoke('getReservationStatus',{reference:ref});if(res.data&&res.data.reference){setO(res.data)}else{setErr(res.data?.error||'Réservation introuvable')}
-      }else{let o=null;try{const aRes=await base44.functions.invoke('fetchOrderStatus',{reference_code:ref});const aO=aRes.data?.orders?.[0];if(aO){o={reference:aO.order_number||aO.reference_code,fulfillment:aO.order_type,status:aO.status,total:aO.total,items:(aO.items||[]).map(it=>({product_name:it.name,quantity:it.quantity,unit_price:it.unit_price})),customer_name:aO.customer_name,phone:aO.customer_phone,address:aO.customer_address,qr_code:'https://caprice-app.base44.app/ticket?ref='+ref}}}catch{}
-      if(!o){const res=await base44.functions.invoke('getOrderStatus',{reference:ref});if(res.data&&res.data.reference){o=res.data}}
-      if(o){setO(o)}else{setErr('Commande introuvable')}}
+      const fn=type==='reservation'?'getReservationStatus':'getOrderStatus';
+      const res=await base44.functions.invoke(fn,{reference:ref});
+      if(res.data&&res.data.reference){setO(res.data)}else{setErr(res.data?.error||(type==='reservation'?'Réservation introuvable':'Commande introuvable'))}
     }catch{setErr(type==='reservation'?'Réservation introuvable':'Commande introuvable')}finally{setLoading(false)}}
     else{const local=JSON.parse(localStorage.getItem('lastOrder')||'null');if(local)setO(local);else setErr('Aucune commande à suivre');setLoading(false)}
   };load()},[ref,type]);
