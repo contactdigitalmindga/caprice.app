@@ -9,3 +9,4 @@ export const heroSlides=[
 ];
 export const cats=['Tous','Entrées','Pâtes','Grillades','Burgers','Pizzas','Salades','Desserts','Boissons','Cocktails','Café'];
 export const times=['12:00','12:30','13:00','19:00','19:30','20:00','20:30','21:00'];
+export const mapMenuItem=it=>({id:it.id,name:it.name,description:it.description||'',category:it.category||'Autres',price:it.price,image_url:it.image_url||'',images:it.images||[],rating:it.rating||4.8,featured:it.featured||false,active:it.available!==false,options:it.options||[]});
