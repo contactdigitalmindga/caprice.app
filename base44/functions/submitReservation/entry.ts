@@ -1,4 +1,4 @@
-import { adminRequest, createNotification, createActionHistory } from "../../shared/adminApi.ts";
+import { adminRequest, createNotification } from "../../shared/adminApi.ts";
 
 export default async function(req: Request): Promise<Response> {
   try {
