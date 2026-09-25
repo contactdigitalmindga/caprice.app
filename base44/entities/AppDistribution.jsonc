@@ -1,0 +1,42 @@
+{
+  "name": "AppDistribution",
+  "type": "object",
+  "properties": {
+    "download_url": {
+      "type": "string"
+    },
+    "apk_url": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string"
+    },
+    "size_mb": {
+      "type": "number"
+    },
+    "play_store_url": {
+      "type": "string"
+    },
+    "app_store_url": {
+      "type": "string"
+    }
+  },
+  "rls": {
+    "read": {},
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

@@ -7,8 +7,10 @@ import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import ScrollToTop from './components/ScrollToTop';
+import { isIOS } from '@/components/download/device';
 const Caprice = lazy(() => import('@/pages/Caprice'));
 const Ticket = lazy(() => import('@/pages/Ticket'));
+const Download = lazy(() => import('@/pages/Download'));
 const Login = lazy(() => import('@/pages/Login'));
 const Register = lazy(() => import('@/pages/Register'));
 const ForgotPassword = lazy(() => import('@/pages/ForgotPassword'));
@@ -48,6 +50,7 @@ const AuthenticatedApp = () => {
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/ticket" element={<Ticket />} />
+      <Route path="/download" element={<Download />} />
       <Route path="/*" element={<Caprice />} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
@@ -57,6 +60,15 @@ const AuthenticatedApp = () => {
 
 
 function App() {
+  useEffect(() => {
+    if (!isIOS()) return;
+    const manifest = document.createElement('link');
+    manifest.rel = 'manifest';
+    manifest.href = '/functions/capriceManifest';
+    document.head.appendChild(manifest);
+    if ('serviceWorker' in navigator) navigator.serviceWorker.register('/functions/capriceWorker', { scope: '/' }).catch(console.error);
+    return () => manifest.remove();
+  }, []);
   useEffect(() => {
     const mq = window.matchMedia('(prefers-color-scheme: dark)');
     const apply = () => { document.documentElement.classList.toggle('dark', mq.matches); document.documentElement.classList.toggle('light', !mq.matches); };

@@ -1,0 +1,14 @@
+import React, { useState } from 'react';
+import { base44 } from '@/api/base44Client';
+
+export default function DownloadQrAdmin({config, onSave}) {
+  const [url, setUrl] = useState(config?.download_url || ''), [busy, setBusy] = useState(false), [error, setError] = useState('');
+  const valid = (() => { try { const u = new URL(config?.download_url); return u.protocol === 'https:' && u.pathname === '/download' && !u.search && !u.hash; } catch { return false; } })();
+  const save = async e => { e.preventDefault(); setError(''); try { const u = new URL(url); if (u.protocol !== 'https:' || u.pathname !== '/download' || u.search || u.hash) throw new Error('Entrez une adresse HTTPS se terminant exactement par /download.'); setBusy(true); await onSave({ download_url: u.href }); } catch (err) { setError(err.message); } finally { setBusy(false); } };
+  const exportQr = async format => { setBusy(true); setError(''); try { const { data } = await base44.functions.invoke('downloadQr', { format }); const a = document.createElement('a'); a.href = data.data_url; a.download = `caprice-telechargement.${format}`; document.body.appendChild(a); a.click(); a.remove(); } catch { setError('Téléchargement du QR code impossible.'); } finally { setBusy(false); } };
+  return <section className="mt-8"><h2>QR CODE DE TÉLÉCHARGEMENT</h2><p className="text-sm text-[#655b52] mb-3">Le QR code mène uniquement à /download. Fixez le domaine avant de l’imprimer : changer de domaine changerait le QR code.</p>
+    <form onSubmit={save} className="form"><input type="url" aria-label="Adresse définitive de téléchargement" placeholder="https://votre-domaine.com/download" value={url} onChange={e=>setUrl(e.target.value)}/><button disabled={busy} type="submit">Enregistrer le lien définitif</button></form>
+    {valid ? <div className="mt-5 bg-white rounded-3xl p-5 text-center"><img className="mx-auto w-52 h-52" alt="QR code de téléchargement CAPRICE" src={`https://api.qrserver.com/v1/create-qr-code/?size=400x400&margin=12&format=png&data=${encodeURIComponent(config.download_url)}`}/><p className="text-sm break-all mt-3">{config.download_url}</p><div className="grid grid-cols-2 gap-2 mt-4"><button className="outline" disabled={busy} onClick={()=>exportQr('png')}>Télécharger PNG</button><button className="outline" disabled={busy} onClick={()=>exportQr('svg')}>Télécharger SVG</button><button className="outline" onClick={()=>navigator.clipboard.writeText(config.download_url)}>Copier le lien</button><a className="outline" href={config.download_url} target="_blank" rel="noopener noreferrer">Voir la page</a></div></div> : <p className="text-sm mt-4 text-[#655b52]">Aucun QR code définitif avant le choix de votre domaine.</p>}
+    {error && <p role="alert" className="mt-2 text-red-700 text-sm">{error}</p>}
+  </section>;
+}
