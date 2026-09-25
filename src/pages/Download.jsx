@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Download as DownloadIcon, ScanLine, FileDown, ShieldCheck, Check, Copy, Link2, ExternalLink } from 'lucide-react';
+import { Download as DownloadIcon, ScanLine, FileDown, ShieldCheck, Check, Copy, Link2, ExternalLink, Share2, Plus, QrCode } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { isIOS, isAndroid } from '@/components/download/device';
 
@@ -91,6 +91,12 @@ export default function Download() {
               <img src={IPHONE_TUTORIAL} alt="Tutoriel d’installation CAPRICE sur iPhone" className="w-full h-auto block" />
             </a>
             <p className="text-center text-xs text-[#3a6a8f] mt-2 flex items-center justify-center gap-1"><ExternalLink size={12} /> Touchez l’image pour l’agrandir</p>
+
+            <h3 className="font-bold text-[#211a15] mt-6 mb-3">Étapes à suivre</h3>
+            <AStep n={1} icon={QrCode} color="#0b6bcf" title="Ouvrez le lien de l’application">Sur votre iPhone, ouvrez Safari et allez sur : {APP_LINK}</AStep>
+            <AStep n={2} icon={Share2} color="#0b6bcf" title="Appuyez sur « Ajouter à l’écran d’accueil »">Touchez l’icône Partager en bas de Safari, faites défiler le menu et sélectionnez « Ajouter à l’écran d’accueil ».</AStep>
+            <AStep n={3} icon={Plus} color="#0b6bcf" title="Vérifiez le nom et appuyez sur « Ajouter »">Le nom « CAPRICE » et le logo apparaissent automatiquement. Touchez « Ajouter » en haut à droite.</AStep>
+            <AStep n={4} icon={Check} color="#0b6bcf" title="L’application est ajoutée !">Vous pouvez maintenant ouvrir CAPRICE en 1 clic depuis votre écran d’accueil.</AStep>
           </section>
         ) : (
           <section className="rounded-3xl p-6 mt-5" style={{ background: '#eef7ee' }}>
