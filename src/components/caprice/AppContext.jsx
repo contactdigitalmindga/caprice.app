@@ -1,4 +1,4 @@
-import React,{createContext,useContext,useEffect,useRef,useState} from 'react';
+import React,{createContext,useContext,useEffect,useState} from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { toast } from '@/components/ui/use-toast';
@@ -8,11 +8,13 @@ export const useCaprice=()=>useContext(C);
 const preloadImage=src=>new Promise(r=>{const img=new window.Image();img.onload=r;img.onerror=r;img.src=src});
 const preloadProducts=products=>Promise.all(products.flatMap(p=>[p.image_url,...(p.images||[])]).filter(Boolean).map(preloadImage));
 const PATHS={home:'/',menu:'/menu',cart:'/cart',checkout:'/checkout',track:'/track',reserve:'/reserve',orders:'/orders',reservations:'/reservations',favorites:'/favorites',profile:'/profile',about:'/about',admin:'/admin',addresses:'/account/addresses',payments:'/account/payments',notifications:'/account/notifications',help:'/account/help',faq:'/faq',terms:'/account/terms',privacy:'/account/privacy'};
-const fromPath=p=>{if(!p||p==='/')return'home';const s=p.split('/')[1];return s==='account'?(p.split('/')[2]||'addresses'):s};const TAB_OF={home:'home',menu:'menu',detail:'menu',favorites:'menu',track:'orders',reserve:'reserve',orders:'orders',profile:'profile',reservations:'profile',about:'profile',admin:'profile'};const TAB_BASES={home:'/',menu:'/menu',reserve:'/reserve',orders:'/orders',profile:'/profile'};
+const fromPath=p=>{if(!p||p==='/')return'home';const s=p.split('/')[1];return s==='account'?(p.split('/')[2]||'addresses'):s};const TAB_OF={home:'home',menu:'menu',detail:'menu',favorites:'menu',track:'orders',reserve:'reserve',orders:'orders',profile:'profile',reservations:'profile',about:'profile',admin:'profile',addresses:'profile',payments:'profile',notifications:'profile',help:'profile',terms:'profile',privacy:'profile',faq:'profile'};const TAB_BASES={home:'/',menu:'/menu',reserve:'/reserve',orders:'/orders',profile:'/profile'};
 export default function AppContext({children}){
   const navigate=useNavigate(),location=useLocation();
   const screen=fromPath(location.pathname);
-  const tab=TAB_OF[screen]||'home';const tabStacks=useRef({home:['/'],menu:['/menu'],reserve:['/reserve'],orders:['/orders'],profile:['/profile']});const setScreen=id=>{const p=PATHS[id]||'/';const t=TAB_OF[fromPath(p)]||'home';if(tabStacks.current[t][tabStacks.current[t].length-1]!==p)tabStacks.current[t]=[...tabStacks.current[t],p];navigate(p)};useEffect(()=>{const t=TAB_OF[screen];if(t){const s=tabStacks.current[t];if(s[s.length-1]!==location.pathname)tabStacks.current[t]=[...s.filter(x=>x!==location.pathname),location.pathname]}},[screen,location.pathname]);const switchTab=id=>{if(id===tab){tabStacks.current[id]=[TAB_BASES[id]];navigate(TAB_BASES[id])}else{const s=tabStacks.current[id];navigate(s[s.length-1]||TAB_BASES[id])}};
+  const tab=TAB_OF[screen]||'home';
+  const setScreen=id=>navigate(PATHS[id]||'/');
+  const switchTab=id=>navigate(TAB_BASES[id]||'/');
   const [products,setProducts]=useState([]),[cart,setCart]=useState([]),[fav,setFav]=useState([]),[selected,setSelected]=useState(null),[loading,setLoading]=useState(true),[imagesReady,setImagesReady]=useState(false),[user,setUser]=useState(null),[loadingFav,setLoadingFav]=useState(null);
   useEffect(()=>{const onboards=[hero,'https://media.base44.com/images/public/6a93174580eda443a786e6c3/7770644eb_generated_image.png','https://media.base44.com/images/public/6a93174580eda443a786e6c3/281f9526f_generated_image.png'];const staticP=Promise.all([hero,...onboards,...heroSlides].map(preloadImage));base44.entities.Product.list().then(p=>{setProducts(p);Promise.all([preloadProducts(p.filter(v=>v.featured).slice(0,6)),staticP]).then(()=>setImagesReady(true))}).finally(()=>setLoading(false))},[]);
   useEffect(()=>{base44.auth.isAuthenticated().then(async(ok)=>{if(ok){try{setUser(await base44.auth.me())}catch{setUser(null)}}})},[]);
