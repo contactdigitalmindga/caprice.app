@@ -1,4 +1,4 @@
-import React,{createContext,useContext,useEffect,useState} from 'react';
+import React,{createContext,useContext,useEffect,useRef,useState} from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { toast } from '@/components/ui/use-toast';
@@ -13,8 +13,21 @@ export default function AppContext({children}){
   const navigate=useNavigate(),location=useLocation();
   const screen=fromPath(location.pathname);
   const tab=TAB_OF[screen]||'home';
+  const tabStacks=useRef({home:[],menu:[],reserve:[],orders:[],profile:[]});
+  const saveTabPath=(id,path)=>{
+    const stack=tabStacks.current[id];
+    const index=stack.lastIndexOf(path);
+    tabStacks.current[id]=index<0?[...stack,path]:stack.slice(0,index+1);
+  };
+  useEffect(()=>{saveTabPath(tab,location.pathname)},[tab,location.pathname]);
   const setScreen=id=>navigate(PATHS[id]||'/');
-  const switchTab=id=>navigate(TAB_BASES[id]||'/');
+  const switchTab=id=>{
+    if(!TAB_BASES[id])return;
+    if(id===tab){tabStacks.current[id]=[];navigate(TAB_BASES[id]);return;}
+    saveTabPath(tab,location.pathname);
+    const stack=tabStacks.current[id];
+    navigate(stack[stack.length-1]||TAB_BASES[id]);
+  };
   const [products,setProducts]=useState([]),[cart,setCart]=useState([]),[fav,setFav]=useState([]),[selected,setSelected]=useState(null),[loading,setLoading]=useState(true),[imagesReady,setImagesReady]=useState(false),[user,setUser]=useState(null),[loadingFav,setLoadingFav]=useState(null);
   useEffect(()=>{const onboards=[hero,'https://media.base44.com/images/public/6a93174580eda443a786e6c3/7770644eb_generated_image.png','https://media.base44.com/images/public/6a93174580eda443a786e6c3/281f9526f_generated_image.png'];const staticP=Promise.all([hero,...onboards,...heroSlides].map(preloadImage));base44.entities.Product.list().then(p=>{setProducts(p);Promise.all([preloadProducts(p.filter(v=>v.featured).slice(0,6)),staticP]).then(()=>setImagesReady(true))}).finally(()=>setLoading(false))},[]);
   useEffect(()=>{base44.auth.isAuthenticated().then(async(ok)=>{if(ok){try{setUser(await base44.auth.me())}catch{setUser(null)}}})},[]);

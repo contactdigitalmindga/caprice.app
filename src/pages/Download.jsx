@@ -24,8 +24,8 @@ const AStep = ({ n, icon: Icon, title, children, color }) => (
       <Icon size={18} />
     </div>
     <div className="flex-1 pb-5">
-      <p className="font-semibold text-[15px] text-[#211a15] leading-snug">{n}. {title}</p>
-      {children && <p className="text-sm text-[#4a6052] mt-1 leading-relaxed">{children}</p>}
+      <p className="font-semibold text-[15px] text-[var(--caprice-fg)] leading-snug">{n}. {title}</p>
+      {children && <p className="text-sm text-[var(--caprice-muted-fg)] mt-1 leading-relaxed">{children}</p>}
     </div>
   </div>
 );
@@ -41,70 +41,70 @@ export default function Download() {
   };
 
   return (
-    <main className="min-h-screen text-[#211a15] font-body" style={{ background: '#f7f2e9' }}>
+    <main className="min-h-screen text-[var(--caprice-fg)] font-body" style={{ background: 'var(--caprice-bg)' }}>
       <div className="max-w-md mx-auto px-5 py-8">
         <div className="flex items-center justify-between">
-          <Link to="/" className="text-sm text-[#9d7844] underline underline-offset-4">← Retour à CAPRICE</Link>
+          <Link to="/" className="text-sm text-[var(--caprice-accent)] underline underline-offset-4">← Retour à CAPRICE</Link>
           <div className="flex items-center gap-2">
-            <div className="w-9 h-9 rounded-xl grid place-items-center text-[#e4c98a] font-bold text-lg shadow" style={{ background: '#211a15' }}>C</div>
-            <span className="tracking-[.25em] text-xs text-[#9d7844] font-semibold">CAPRICE</span>
+            <div className="w-9 h-9 rounded-xl grid place-items-center text-[var(--caprice-accent-light)] font-bold text-lg shadow" style={{ background: 'var(--caprice-muted)' }}>C</div>
+            <span className="tracking-[.25em] text-xs text-[var(--caprice-accent)] font-semibold">CAPRICE</span>
           </div>
         </div>
 
-        <h1 className="font-bold text-xl text-center text-[#211a15] mt-6">Téléchargez l’application CAPRICE</h1>
-        <p className="text-center text-sm text-[#655b52] mt-1">Choisissez votre appareil pour installer l’application.</p>
+        <h1 className="font-bold text-xl text-center text-[var(--caprice-fg)] mt-6">Téléchargez l’application CAPRICE</h1>
+        <p className="text-center text-sm text-[var(--caprice-muted-fg)] mt-1">Choisissez votre appareil pour installer l’application.</p>
 
         {/* Onglets coulissants */}
-        <div className="grid grid-cols-2 gap-2 mt-6 p-1.5 rounded-2xl" style={{ background: '#e7dccb' }}>
-          <button onClick={() => setTab('ios')} className="flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-semibold transition" style={tab === 'ios' ? { background: '#fff', color: '#0b6bcf', boxShadow: '0 2px 8px rgba(0,0,0,.08)' } : { color: '#655b52' }}>
+        <div className="grid grid-cols-2 gap-2 mt-6 p-1.5 rounded-2xl" style={{ background: 'var(--caprice-muted)' }}>
+          <button onClick={() => setTab('ios')} className="flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-semibold transition" style={tab === 'ios' ? { background: 'var(--caprice-card)', color: '#0b6bcf', boxShadow: '0 2px 8px var(--caprice-shadow)' } : { color: 'var(--caprice-muted-fg)' }}>
             <AppleLogo className="w-5 h-5" /> iPhone / iPad
           </button>
-          <button onClick={() => setTab('android')} className="flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-semibold transition" style={tab === 'android' ? { background: '#fff', color: '#2e9e4f', boxShadow: '0 2px 8px rgba(0,0,0,.08)' } : { color: '#655b52' }}>
+          <button onClick={() => setTab('android')} className="flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-semibold transition" style={tab === 'android' ? { background: 'var(--caprice-card)', color: '#2e9e4f', boxShadow: '0 2px 8px var(--caprice-shadow)' } : { color: 'var(--caprice-muted-fg)' }}>
             <AndroidLogo className="w-5 h-5" /> Android
           </button>
         </div>
 
         {tab === 'ios' ? (
-          <section className="rounded-3xl p-6 mt-5" style={{ background: '#eef6fb' }}>
+          <section className="rounded-3xl p-6 mt-5" style={{ background: 'var(--caprice-card)' }}>
             <header className="flex items-center gap-3 mb-4">
               <span className="w-11 h-11 rounded-2xl grid place-items-center text-white" style={{ background: '#0b6bcf' }}><AppleLogo className="w-6 h-6" /></span>
               <div>
-                <h2 className="font-bold text-lg text-[#211a15] leading-tight">iPhone / iPad</h2>
-                <p className="text-xs text-[#3a6a8f]">Installation PWA — Ajouter à l’écran d’accueil</p>
+                <h2 className="font-bold text-lg text-[var(--caprice-fg)] leading-tight">iPhone / iPad</h2>
+                <p className="text-xs text-[var(--caprice-muted-fg)]">Installation PWA — Ajouter à l’écran d’accueil</p>
               </div>
             </header>
 
             {/* Lien à copier */}
-            <div className="rounded-2xl p-4 mb-5" style={{ background: '#f5e6d8' }}>
-              <p className="text-xs font-semibold text-[#655b52] flex items-center gap-1.5"><Link2 size={13} /> Lien de l’application :</p>
+            <div className="rounded-2xl p-4 mb-5" style={{ background: 'var(--caprice-muted)' }}>
+              <p className="text-xs font-semibold text-[var(--caprice-muted-fg)] flex items-center gap-1.5"><Link2 size={13} /> Lien de l’application :</p>
               <div className="flex items-center gap-2 mt-2">
-                <span className="flex-1 bg-white rounded-full px-3 py-2 text-sm font-medium text-[#211a15] truncate border border-[#eadfce]">{APP_LINK}</span>
+                <span className="flex-1 bg-[var(--caprice-card)] rounded-full px-3 py-2 text-sm font-medium text-[var(--caprice-fg)] truncate border border-[var(--caprice-border)]">{APP_LINK}</span>
                 <button onClick={copyLink} className="flex-none w-9 h-9 rounded-full grid place-items-center text-white" style={{ background: copied ? '#2e9e4f' : '#0b6bcf' }}>
                   {copied ? <Check size={16} /> : <Copy size={16} />}
                 </button>
               </div>
-              <p className="text-xs text-[#655b52] mt-2">Accédez à l’application en 1 clic depuis votre écran d’accueil !</p>
+              <p className="text-xs text-[var(--caprice-muted-fg)] mt-2">Accédez à l’application en 1 clic depuis votre écran d’accueil !</p>
             </div>
 
             {/* Image tutorielle en grand */}
-            <a href={IPHONE_TUTORIAL} target="_blank" rel="noopener noreferrer" className="block rounded-2xl overflow-hidden border border-[#d6e8f5]">
+            <a href={IPHONE_TUTORIAL} target="_blank" rel="noopener noreferrer" className="block rounded-2xl overflow-hidden border border-[var(--caprice-border)]">
               <img src={IPHONE_TUTORIAL} alt="Tutoriel d’installation CAPRICE sur iPhone" className="w-full h-auto block" />
             </a>
-            <p className="text-center text-xs text-[#3a6a8f] mt-2 flex items-center justify-center gap-1"><ExternalLink size={12} /> Touchez l’image pour l’agrandir</p>
+            <p className="text-center text-xs text-[var(--caprice-muted-fg)] mt-2 flex items-center justify-center gap-1"><ExternalLink size={12} /> Touchez l’image pour l’agrandir</p>
 
-            <h3 className="font-bold text-[#211a15] mt-6 mb-3">Étapes à suivre</h3>
+            <h3 className="font-bold text-[var(--caprice-fg)] mt-6 mb-3">Étapes à suivre</h3>
             <AStep n={1} icon={QrCode} color="#0b6bcf" title="Ouvrez le lien de l’application">Sur votre iPhone, ouvrez Safari et allez sur : {APP_LINK}</AStep>
             <AStep n={2} icon={Share2} color="#0b6bcf" title="Appuyez sur « Ajouter à l’écran d’accueil »">Touchez l’icône Partager en bas de Safari, faites défiler le menu et sélectionnez « Ajouter à l’écran d’accueil ».</AStep>
             <AStep n={3} icon={Plus} color="#0b6bcf" title="Vérifiez le nom et appuyez sur « Ajouter »">Le nom « CAPRICE » et le logo apparaissent automatiquement. Touchez « Ajouter » en haut à droite.</AStep>
             <AStep n={4} icon={Check} color="#0b6bcf" title="L’application est ajoutée !">Vous pouvez maintenant ouvrir CAPRICE en 1 clic depuis votre écran d’accueil.</AStep>
           </section>
         ) : (
-          <section className="rounded-3xl p-6 mt-5" style={{ background: '#eef7ee' }}>
+          <section className="rounded-3xl p-6 mt-5" style={{ background: 'var(--caprice-card)' }}>
             <header className="flex items-center gap-3 mb-4">
               <span className="w-11 h-11 rounded-2xl grid place-items-center text-white" style={{ background: '#2e9e4f' }}><AndroidLogo className="w-6 h-6" /></span>
               <div>
-                <h2 className="font-bold text-lg text-[#211a15] leading-tight">Android</h2>
-                <p className="text-xs text-[#3a7a52]">Téléchargement direct de l’APK</p>
+                <h2 className="font-bold text-lg text-[var(--caprice-fg)] leading-tight">Android</h2>
+                <p className="text-xs text-[var(--caprice-muted-fg)]">Téléchargement direct de l’APK</p>
               </div>
             </header>
 
@@ -112,7 +112,7 @@ export default function Download() {
             <a href="/functions/downloadApk" className="flex items-center justify-center gap-2 rounded-2xl text-white p-4 font-bold text-base shadow-md" style={{ background: '#2e9e4f' }}>
               <DownloadIcon size={22} /> Télécharger l’application {config?.version ? `(v${config.version})` : ''}
             </a>
-            {config?.size_mb ? <p className="text-center text-xs text-[#4a6052] mt-2">Taille : {config.size_mb} Mo</p> : null}
+            {config?.size_mb ? <p className="text-center text-xs text-[var(--caprice-muted-fg)] mt-2">Taille : {config.size_mb} Mo</p> : null}
 
             {/* Tuto en bas */}
             <div className="mt-6">
@@ -124,7 +124,7 @@ export default function Download() {
           </section>
         )}
 
-        <p className="text-center text-xs text-[#655b52] mt-8">Application distribuée directement par CAPRICE — Restaurant fine dining à Libreville.</p>
+        <p className="text-center text-xs text-[var(--caprice-muted-fg)] mt-8">Application distribuée directement par CAPRICE — Restaurant fine dining à Libreville.</p>
       </div>
     </main>
   );
