@@ -9,10 +9,18 @@ export default function BottomNav(){
   const{tab,switchTab}=useCaprice();
   const[visible,setVisible]=useState(true);
   useEffect(()=>{
-    let lastY=window.scrollY,ticking=false;
-    const onScroll=()=>{if(ticking)return;ticking=true;requestAnimationFrame(()=>{const y=window.scrollY;if(y<10)setVisible(true);else if(y>lastY+5)setVisible(false);else if(y<lastY-5)setVisible(true);lastY=y;ticking=false})};
+    let lastY=window.scrollY,ticking=false,idleTimer,frame;
+    const show=()=>{clearTimeout(idleTimer);setVisible(true)};
+    const onScroll=()=>{
+      clearTimeout(idleTimer);
+      idleTimer=setTimeout(show,140);
+      if(ticking)return;
+      ticking=true;
+      frame=requestAnimationFrame(()=>{const y=window.scrollY;if(y<10)setVisible(true);else if(y>lastY+5)setVisible(false);else if(y<lastY-5)setVisible(true);lastY=y;ticking=false});
+    };
     window.addEventListener('scroll',onScroll,{passive:true});
-    return()=>window.removeEventListener('scroll',onScroll);
+    window.addEventListener('scrollend',show);
+    return()=>{window.removeEventListener('scroll',onScroll);window.removeEventListener('scrollend',show);clearTimeout(idleTimer);cancelAnimationFrame(frame)};
   },[]);
   return <motion.nav aria-label="Navigation principale" className="knife-nav-dock" animate={{y:visible?0:'130%'}} transition={{type:'spring',stiffness:500,damping:32}}>
     <div className="knife-nav-surface">
