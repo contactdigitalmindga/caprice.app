@@ -1,233 +1,38 @@
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { base44 } from "@/api/base44Client";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { UserPlus, Mail, Lock, Loader2 } from "lucide-react";
-import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
-import AuthLayout from "@/components/AuthLayout";
-import GoogleIcon from "@/components/GoogleIcon";
-import { toast } from "@/components/ui/use-toast";
-import { safeReturnTo } from "@/lib/authReturnTo";
-
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { Loader2 } from 'lucide-react';
+import { base44 } from '@/api/base44Client';
+import AuthLayout from '@/components/AuthLayout';
+import AuthField from '@/components/auth/AuthField';
+import ProviderButtons from '@/components/auth/ProviderButtons';
+import EmailVerification from '@/components/auth/EmailVerification';
+import { safeReturnTo } from '@/lib/authReturnTo';
 export default function Register() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [showOtp, setShowOtp] = useState(false);
-  const [otpCode, setOtpCode] = useState("");
-  const navigate = useNavigate();
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
-    if (password !== confirmPassword) {
-      setError("Passwords do not match");
-      return;
-    }
+  const [name, setName] = useState(''), [email, setEmail] = useState(''), [password, setPassword] = useState(''), [confirm, setConfirm] = useState('');
+  const [accepted, setAccepted] = useState(false), [error, setError] = useState(''), [loading, setLoading] = useState(false), [verification, setVerification] = useState(false);
+  const returnTo = safeReturnTo();
+  const submit = async e => {
+    e.preventDefault(); setError('');
+    if (!name.trim()) return setError('Veuillez renseigner votre nom complet.');
+    if (password.length < 8) return setError('Utilisez au moins 8 caractères pour votre mot de passe.');
+    if (password !== confirm) return setError('Les mots de passe ne correspondent pas.');
+    if (!accepted) return setError('Veuillez accepter les conditions d’utilisation et la politique de confidentialité.');
     setLoading(true);
-    try {
-      await base44.auth.register({ email, password });
-      setShowOtp(true);
-    } catch (err) {
-      setError(err.message || "Registration failed");
-    } finally {
-      setLoading(false);
-    }
+    try { await base44.auth.register({ email: email.trim(), password }); setVerification(true); }
+    catch { setError('Inscription impossible. Vérifiez votre connexion. Si vous avez déjà un compte, connectez-vous ou réinitialisez votre mot de passe.'); }
+    finally { setLoading(false); }
   };
-
-  const handleVerify = async () => {
-    setError("");
-    setLoading(true);
-    try {
-      const result = await base44.auth.verifyOtp({ email, otpCode });
-      if (result?.access_token) {
-        base44.auth.setToken(result.access_token);
-      }
-      navigate(safeReturnTo());
-    } catch (err) {
-      setError(err.message || "Invalid verification code");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleResend = async () => {
-    setError("");
-    try {
-      await base44.auth.resendOtp(email);
-      toast({
-        title: "Code sent",
-        description: "Check your email for the new code.",
-      });
-    } catch (err) {
-      setError(err.message || "Failed to resend code");
-    }
-  };
-
-  const handleGoogle = () => {
-    base44.auth.loginWithProvider("google", safeReturnTo());
-  };
-
-  if (showOtp) {
-    return (
-      <AuthLayout
-        icon={Mail}
-        title="Verify your email"
-        subtitle={`We sent a code to ${email}`}
-      >
-        {error && (
-          <div className="mb-4 p-3 rounded-lg bg-destructive/10 text-destructive text-sm">
-            {error}
-          </div>
-        )}
-        <div className="flex justify-center mb-6">
-          <InputOTP
-            maxLength={6}
-            value={otpCode}
-            onChange={setOtpCode}
-            autoFocus
-            autoComplete="one-time-code"
-          >
-            <InputOTPGroup>
-              <InputOTPSlot index={0} />
-              <InputOTPSlot index={1} />
-              <InputOTPSlot index={2} />
-              <InputOTPSlot index={3} />
-              <InputOTPSlot index={4} />
-              <InputOTPSlot index={5} />
-            </InputOTPGroup>
-          </InputOTP>
-        </div>
-        <Button
-          className="w-full h-12 font-medium"
-          onClick={handleVerify}
-          disabled={loading || otpCode.length < 6}
-        >
-          {loading ? (
-            <>
-              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-              Verifying...
-            </>
-          ) : (
-            "Verify"
-          )}
-        </Button>
-        <p className="text-center text-sm text-muted-foreground mt-4">
-          Didn't receive the code?{" "}
-          <button onClick={handleResend} className="text-primary font-medium hover:underline">
-            Resend
-          </button>
-        </p>
-      </AuthLayout>
-    );
-  }
-
-  return (
-    <AuthLayout
-      icon={UserPlus}
-      title="Create your account"
-      subtitle="Sign up to get started"
-      footer={
-        <>
-          Already have an account?{" "}
-          <Link
-            to={"/login" + (safeReturnTo() !== "/" ? "?returnTo=" + encodeURIComponent(safeReturnTo()) : "")}
-            className="text-primary font-medium hover:underline"
-          >
-            Log in
-          </Link>
-        </>
-      }
-    >
-      <Button
-        variant="outline"
-        className="w-full h-12 text-sm font-medium mb-6"
-        onClick={handleGoogle}
-      >
-        <GoogleIcon className="w-5 h-5 mr-2" />
-        Continue with Google
-      </Button>
-
-      <div className="relative mb-6">
-        <div className="absolute inset-0 flex items-center">
-          <div className="w-full border-t border-border" />
-        </div>
-        <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-card px-3 text-muted-foreground">or</span>
-        </div>
-      </div>
-
-      {error && (
-        <div className="mb-4 p-3 rounded-lg bg-destructive/10 text-destructive text-sm">
-          {error}
-        </div>
-      )}
-
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="space-y-2">
-          <Label htmlFor="email">Email</Label>
-          <div className="relative">
-            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" aria-hidden="true" />
-            <Input
-              id="email"
-              type="email"
-              autoComplete="email"
-              autoFocus
-              placeholder="you@example.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="pl-10 h-12"
-              required
-            />
-          </div>
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="password">Password</Label>
-          <div className="relative">
-            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" aria-hidden="true" />
-            <Input
-              id="password"
-              type="password"
-              autoComplete="new-password"
-              placeholder="••••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="pl-10 h-12"
-              required
-            />
-          </div>
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="confirm">Confirm Password</Label>
-          <div className="relative">
-            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" aria-hidden="true" />
-            <Input
-              id="confirm"
-              type="password"
-              autoComplete="new-password"
-              placeholder="••••••••"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              className="pl-10 h-12"
-              required
-            />
-          </div>
-        </div>
-        <Button type="submit" className="w-full h-12 font-medium" disabled={loading}>
-          {loading ? (
-            <>
-              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-              Creating account...
-            </>
-          ) : (
-            "Create account"
-          )}
-        </Button>
-      </form>
-    </AuthLayout>
-  );
+  if (verification) return <EmailVerification email={email.trim()} fullName={name} returnTo={returnTo} />;
+  return <AuthLayout title="Rejoignez Caprice" subtitle="Créez votre compte et profitez d’une expérience personnalisée." footer={<>Déjà membre ? <Link to={'/login?returnTo=' + encodeURIComponent(returnTo)}>Se connecter</Link></>}>
+    <ProviderButtons returnTo={returnTo} />
+    {error && <p className="auth-error" role="alert">{error}</p>}
+    <form className="auth-form" onSubmit={submit} aria-busy={loading}>
+      <AuthField id="full-name" label="Nom complet" autoComplete="name" placeholder="Votre nom complet" value={name} onChange={e => setName(e.target.value)} disabled={loading} />
+      <AuthField id="email" label="Adresse e-mail" type="email" autoComplete="email" autoCapitalize="none" inputMode="email" spellCheck={false} placeholder="vous@exemple.com" value={email} onChange={e => setEmail(e.target.value)} disabled={loading} />
+      <AuthField id="password" label="Mot de passe" type="password" autoComplete="new-password" minLength={8} placeholder="8 caractères minimum" value={password} onChange={e => setPassword(e.target.value)} disabled={loading} />
+      <AuthField id="confirm-password" label="Confirmer le mot de passe" type="password" autoComplete="new-password" match={password} value={confirm} onChange={e => setConfirm(e.target.value)} disabled={loading} />
+      <label className="auth-legal"><input type="checkbox" checked={accepted} onChange={e => setAccepted(e.target.checked)} required disabled={loading} /><span>J’accepte les <Link to="/account/terms" target="_blank" rel="noopener noreferrer">Conditions d’utilisation</Link> et la <Link to="/account/privacy" target="_blank" rel="noopener noreferrer">Politique de confidentialité</Link>.</span></label>
+      <button className="auth-primary" disabled={loading}>{loading && <Loader2 size={18} className="animate-spin" />}{loading ? 'Création du compte…' : 'Créer mon compte'}</button>
+    </form>
+  </AuthLayout>;
 }

@@ -1,23 +1,20 @@
-import React from "react";
-
-export default function AuthLayout({ icon: Icon, title, subtitle, footer, children }) {
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-background px-4">
-      <div className="w-full max-w-md">
-        <div className="text-center mb-10">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-primary mb-4">
-            <Icon className="w-7 h-7 text-primary-foreground" aria-hidden="true" />
-          </div>
-          <h1 className="text-3xl font-bold tracking-tight text-foreground">{title}</h1>
-          {subtitle && <p className="text-muted-foreground mt-2">{subtitle}</p>}
-        </div>
-        <div className="bg-card rounded-2xl shadow-sm border border-border p-8">
-          {children}
-        </div>
-        {footer && (
-          <p className="text-center text-sm text-muted-foreground mt-6">{footer}</p>
-        )}
-      </div>
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { ArrowLeft } from 'lucide-react';
+import { hero, logo } from '@/lib/caprice';
+import '@/components/auth/auth.css';
+export default function AuthLayout({ icon: Icon, title, subtitle, footer, children, welcome = false }) {
+  return <main className={`caprice-auth${welcome ? ' auth-welcome' : ''}`}>
+    <div className="auth-background" aria-hidden="true"><img src={hero} alt="" fetchPriority="high" /></div>
+    <div className="auth-shell">
+      <div className="auth-top"><Link to="/welcome" className="auth-back" aria-label="Retour à l’accueil"><ArrowLeft size={18} /></Link></div>
+      <Link to="/" className="auth-brand" aria-label="CAPRICE, accueil"><img src={logo} alt="CAPRICE Restaurant" /></Link>
+      <header className="auth-heading">
+        {Icon && <div className="auth-emblem"><Icon size={28} aria-hidden="true" /></div>}
+        <h1>{title}</h1>{subtitle && <p>{subtitle}</p>}
+      </header>
+      <div className="auth-panel">{children}</div>
+      {footer && <div className="auth-footer">{footer}</div>}
     </div>
-  );
+  </main>;
 }

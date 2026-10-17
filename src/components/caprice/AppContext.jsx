@@ -28,12 +28,22 @@ export default function AppContext({children}){
     const stack=tabStacks.current[id];
     navigate(stack[stack.length-1]||TAB_BASES[id]);
   };
-  const [products,setProducts]=useState([]),[cart,setCart]=useState([]),[fav,setFav]=useState([]),[selected,setSelected]=useState(null),[loading,setLoading]=useState(true),[imagesReady,setImagesReady]=useState(false),[user,setUser]=useState(null),[loadingFav,setLoadingFav]=useState(null);
+  const [products,setProducts]=useState([]),[cart,setCart]=useState(()=>{try{return JSON.parse(sessionStorage.getItem('caprice_auth_cart')||'[]')}catch{return[]}}),[fav,setFav]=useState([]),[selected,setSelected]=useState(null),[loading,setLoading]=useState(true),[imagesReady,setImagesReady]=useState(false),[user,setUser]=useState(null),[loadingFav,setLoadingFav]=useState(null);
   useEffect(()=>{const onboards=[hero,'https://media.base44.com/images/public/6a93174580eda443a786e6c3/7770644eb_generated_image.png','https://media.base44.com/images/public/6a93174580eda443a786e6c3/281f9526f_generated_image.png'];const staticP=Promise.all([hero,...onboards,...heroSlides].map(preloadImage));base44.entities.Product.list().then(p=>{setProducts(p);Promise.all([preloadProducts(p.filter(v=>v.featured).slice(0,6)),staticP]).then(()=>setImagesReady(true))}).finally(()=>setLoading(false))},[]);
   useEffect(()=>{base44.auth.isAuthenticated().then(async(ok)=>{if(ok){try{setUser(await base44.auth.me())}catch{setUser(null)}}})},[]);
+  const[favoritePage,setFavoritePage]=useState({next_cursor:null,has_more:false});
+  const loadFavorites=async(cursor)=>{
+    if(!user)return;
+    const page=await base44.entities.Favorite.filter({created_by_id:user.id},{sort:'-created_date',limit:50,...(cursor?{cursor}:{})});
+    const items=page.items.map(f=>({...f,id:f.product_id,name:f.product_name}));
+    setFav(previous=>cursor?[...previous,...items]:items);
+    setFavoritePage({next_cursor:page.next_cursor,has_more:page.has_more});
+  };
+  useEffect(()=>{if(user)loadFavorites()},[user?.id]);
   const refreshUser=async()=>{try{setUser(await base44.auth.me())}catch{setUser(null)}};
   const refreshProducts=async()=>{const p=await base44.entities.Product.list();setProducts(p);preloadProducts(p)};
   const logout=async()=>{await base44.auth.logout();setUser(null);setScreen('home')};
+  useEffect(()=>{sessionStorage.setItem('caprice_auth_cart',JSON.stringify(cart))},[cart]);
   const goLogin=()=>navigate('/login');
   const goRegister=()=>navigate('/register');
   const add=(p,q=1,opt='')=>setCart(x=>{const i=x.findIndex(v=>v.id===p.id&&v.opt===opt);return i<0?[...x,{...p,q,opt}]:x.map((v,n)=>n===i?{...v,q:v.q+q}:v)});
@@ -41,5 +51,5 @@ export default function AppContext({children}){
   const open=p=>{setSelected(p);navigate(`/detail/${p.id}`)};
   const toggle=p=>setFav(x=>x.some(v=>v.id===p.id)?x.filter(v=>v.id!==p.id):[...x,p]);
   const toggleFavOptimistic=async p=>{const wasFav=fav.some(v=>v.id===p.id);setFav(x=>wasFav?x.filter(v=>v.id!==p.id):[...x,p]);setLoadingFav(p.id);if(user){try{if(wasFav){const r=await base44.entities.Favorite.filter({product_id:p.id});if(r.length)await base44.entities.Favorite.delete(r[0].id)}else{await base44.entities.Favorite.create({product_id:p.id,product_name:p.name,image_url:p.image_url,price:p.price})}}catch{setFav(x=>wasFav?[...x,p]:x.filter(v=>v.id!==p.id));toast({title:'Erreur',description:'Impossible de mettre à jour vos favoris.',variant:'destructive'})}}setLoadingFav(null)};
-  return <C.Provider value={{screen,setScreen,switchTab,tab,products,setProducts,refreshProducts,cart,setCart,revertCart,fav,toggle,toggleFavOptimistic,loadingFav,selected,open,add,loading,imagesReady,user,refreshUser,logout,goLogin,goRegister}}>{children}</C.Provider>;
+  return <C.Provider value={{screen,setScreen,switchTab,tab,products,setProducts,refreshProducts,cart,setCart,revertCart,fav,loadFavorites,favoritePage,toggle,toggleFavOptimistic,loadingFav,selected,open,add,loading,imagesReady,user,refreshUser,logout,goLogin,goRegister}}>{children}</C.Provider>;
 }

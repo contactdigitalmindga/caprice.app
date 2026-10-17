@@ -1,133 +1,29 @@
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { base44 } from "@/api/base44Client";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { LogIn, Mail, Lock, Loader2 } from "lucide-react";
-import AuthLayout from "@/components/AuthLayout";
-import GoogleIcon from "@/components/GoogleIcon";
-import { safeReturnTo } from "@/lib/authReturnTo";
-
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { Loader2 } from 'lucide-react';
+import { base44 } from '@/api/base44Client';
+import AuthLayout from '@/components/AuthLayout';
+import AuthField from '@/components/auth/AuthField';
+import ProviderButtons from '@/components/auth/ProviderButtons';
+import { safeReturnTo } from '@/lib/authReturnTo';
 export default function Login() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
-  // Post-login destination (e.g. the MCP OAuth consent page sends users here
-  // with returnTo so the grant flow can resume). Same-origin paths only.
-  const navigate = useNavigate();
-  const returnTo = safeReturnTo();
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
-    setLoading(true);
-    try {
-      await base44.auth.loginViaEmailPassword(email, password);
-      navigate(returnTo);
-    } catch (err) {
-      setError(err.message || "Invalid email or password");
-    } finally {
-      setLoading(false);
-    }
+  const [email, setEmail] = useState(''), [password, setPassword] = useState('');
+  const [error, setError] = useState(''), [loading, setLoading] = useState(false);
+  const returnTo = safeReturnTo(), query = '?returnTo=' + encodeURIComponent(returnTo);
+  const submit = async e => {
+    e.preventDefault(); setError(''); setLoading(true);
+    try { await base44.auth.loginViaEmailPassword(email.trim(), password); window.location.href = returnTo; }
+    catch (err) { setError(!navigator.onLine || !err.status ? 'Connexion impossible. Vérifiez votre connexion Internet et réessayez.' : 'Connexion refusée. Vérifiez votre e-mail et votre mot de passe. Si votre compte est récent, terminez sa vérification.'); }
+    finally { setLoading(false); }
   };
-
-  const handleGoogle = () => {
-    base44.auth.loginWithProvider("google", returnTo);
-  };
-
-  return (
-    <AuthLayout
-      icon={LogIn}
-      title="Welcome back"
-      subtitle="Log in to your account"
-      footer={
-        <>
-          Don't have an account?{" "}
-          <Link
-            to={"/register" + (returnTo !== "/" ? "?returnTo=" + encodeURIComponent(returnTo) : "")}
-            className="text-primary font-medium hover:underline"
-          >
-            Create one
-          </Link>
-        </>
-      }
-    >
-      <Button
-        variant="outline"
-        className="w-full h-12 text-sm font-medium mb-6"
-        onClick={handleGoogle}
-      >
-        <GoogleIcon className="w-5 h-5 mr-2" />
-        Continue with Google
-      </Button>
-
-      <div className="relative mb-6">
-        <div className="absolute inset-0 flex items-center">
-          <div className="w-full border-t border-border" />
-        </div>
-        <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-card px-3 text-muted-foreground">or</span>
-        </div>
-      </div>
-
-      {error && (
-        <div className="mb-4 p-3 rounded-lg bg-destructive/10 text-destructive text-sm">
-          {error}
-        </div>
-      )}
-
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="space-y-2">
-          <Label htmlFor="email">Email</Label>
-          <div className="relative">
-            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" aria-hidden="true" />
-            <Input
-              id="email"
-              type="email"
-              autoComplete="email"
-              autoFocus
-              placeholder="you@example.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="pl-10 h-12"
-              required
-            />
-          </div>
-        </div>
-        <div className="space-y-2">
-          <div className="flex items-center justify-between">
-            <Label htmlFor="password">Password</Label>
-            <Link to="/forgot-password" className="text-xs text-primary hover:underline">
-              Forgot password?
-            </Link>
-          </div>
-          <div className="relative">
-            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" aria-hidden="true" />
-            <Input
-              id="password"
-              type="password"
-              autoComplete="current-password"
-              placeholder="••••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="pl-10 h-12"
-              required
-            />
-          </div>
-        </div>
-        <Button type="submit" className="w-full h-12 font-medium" disabled={loading}>
-          {loading ? (
-            <>
-              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-              Logging in...
-            </>
-          ) : (
-            "Log in"
-          )}
-        </Button>
-      </form>
-    </AuthLayout>
-  );
+  return <AuthLayout title="Bienvenue chez Caprice" subtitle="Connectez-vous pour retrouver vos commandes, réservations et favoris." footer={<>Pas encore de compte ? <Link to={'/register' + query}>Créer un compte</Link><br /><Link to="/menu">Explorer le menu sans compte</Link></>}>
+    <ProviderButtons returnTo={returnTo} />
+    {error && <p className="auth-error" role="alert">{error}</p>}
+    <form onSubmit={submit} className="auth-form" aria-busy={loading}>
+      <AuthField id="email" label="Adresse e-mail" type="email" autoComplete="username" inputMode="email" autoCapitalize="none" spellCheck={false} placeholder="vous@exemple.com" value={email} onChange={e => setEmail(e.target.value)} disabled={loading} />
+      <AuthField id="password" label="Mot de passe" type="password" autoComplete="current-password" placeholder="Votre mot de passe" value={password} onChange={e => setPassword(e.target.value)} disabled={loading} />
+      <Link className="auth-forgot" to={'/forgot-password' + query}>Mot de passe oublié ?</Link>
+      <button className="auth-primary" disabled={loading}>{loading && <Loader2 size={18} className="animate-spin" />}{loading ? 'Connexion…' : 'Se connecter'}</button>
+    </form>
+  </AuthLayout>;
 }

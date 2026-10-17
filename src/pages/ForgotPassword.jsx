@@ -1,76 +1,23 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import { base44 } from "@/api/base44Client";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Mail, ArrowLeft, Loader2 } from "lucide-react";
-import AuthLayout from "@/components/AuthLayout";
-
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { Mail, Loader2 } from 'lucide-react';
+import { base44 } from '@/api/base44Client';
+import AuthLayout from '@/components/AuthLayout';
+import AuthField from '@/components/auth/AuthField';
+import { safeReturnTo } from '@/lib/authReturnTo';
 export default function ForgotPassword() {
-  const [email, setEmail] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [sent, setSent] = useState(false);
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    try {
-      await base44.auth.resetPasswordRequest(email);
-    } catch {
-      // Always show success regardless
-    } finally {
-      setLoading(false);
-      setSent(true);
-    }
+  const [email, setEmail] = useState(''), [loading, setLoading] = useState(false), [sent, setSent] = useState(false);
+  const returnTo = safeReturnTo();
+  const submit = async e => {
+    e.preventDefault(); setLoading(true);
+    try { await base44.auth.resetPasswordRequest(email.trim()); }
+    catch { /* Keep the same generic response to avoid revealing account existence. */ }
+    finally { setLoading(false); setSent(true); }
   };
-
-  return (
-    <AuthLayout
-      icon={Mail}
-      title="Reset password"
-      subtitle="We'll send you a link to reset it"
-      footer={
-        <Link to="/login" className="text-primary font-medium hover:underline">
-          <ArrowLeft className="w-3 h-3 inline mr-1" />Back to log in
-        </Link>
-      }
-    >
-      {sent ? (
-        <p className="text-sm text-foreground text-center">
-          If an account exists with that email, you'll receive a password reset link shortly.
-        </p>
-      ) : (
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="email">Email address</Label>
-            <div className="relative">
-              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" aria-hidden="true" />
-              <Input
-                id="email"
-                type="email"
-                autoComplete="email"
-                autoFocus
-                placeholder="you@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="pl-10 h-12"
-                required
-              />
-            </div>
-          </div>
-          <Button type="submit" className="w-full h-12 font-medium" disabled={loading}>
-            {loading ? (
-              <>
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                Sending...
-              </>
-            ) : (
-              "Send reset link"
-            )}
-          </Button>
-        </form>
-      )}
-    </AuthLayout>
-  );
+  return <AuthLayout icon={Mail} title={sent ? 'Consultez votre messagerie' : 'Mot de passe oublié ?'} subtitle={sent ? 'Retrouvez l’accès à votre expérience Caprice.' : 'Recevez un lien pour définir un nouveau mot de passe.'} footer={<Link to={'/login?returnTo=' + encodeURIComponent(returnTo)}>Retour à la connexion</Link>}>
+    {sent ? <><p className="auth-notice" role="status">Si un compte correspond à {email}, vous recevrez un lien de réinitialisation. Consultez également vos courriers indésirables.</p><button className="auth-text-button" onClick={() => setSent(false)}>Réessayer avec mon adresse e-mail</button></> : <form className="auth-form" onSubmit={submit} aria-busy={loading}>
+      <AuthField id="email" label="Adresse e-mail" type="email" autoComplete="email" inputMode="email" autoCapitalize="none" spellCheck={false} placeholder="vous@exemple.com" value={email} onChange={e => setEmail(e.target.value)} disabled={loading} />
+      <button className="auth-primary" disabled={loading}>{loading && <Loader2 size={18} className="animate-spin" />}{loading ? 'Envoi…' : 'Envoyer le lien de réinitialisation'}</button>
+    </form>}
+  </AuthLayout>;
 }

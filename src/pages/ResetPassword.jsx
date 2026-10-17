@@ -1,115 +1,28 @@
-import React, { useState } from "react";
-import { Link, useSearchParams, useNavigate } from "react-router-dom";
-import { base44 } from "@/api/base44Client";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Lock, Loader2, AlertTriangle } from "lucide-react";
-import AuthLayout from "@/components/AuthLayout";
-
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { LockKeyhole, Loader2, AlertTriangle } from 'lucide-react';
+import { base44 } from '@/api/base44Client';
+import AuthLayout from '@/components/AuthLayout';
+import AuthField from '@/components/auth/AuthField';
 export default function ResetPassword() {
-  const [searchParams] = useSearchParams();
-  const resetToken = searchParams.get("token");
-
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
-    if (newPassword !== confirmPassword) {
-      setError("Passwords do not match");
-      return;
-    }
+  const resetToken = new URLSearchParams(window.location.search).get('token');
+  const [password, setPassword] = useState(''), [confirm, setConfirm] = useState(''), [error, setError] = useState(''), [loading, setLoading] = useState(false);
+  const submit = async e => {
+    e.preventDefault(); setError('');
+    if (password.length < 8) return setError('Utilisez au moins 8 caractères.');
+    if (password !== confirm) return setError('Les mots de passe ne correspondent pas.');
     setLoading(true);
-    try {
-      await base44.auth.resetPassword({ resetToken, newPassword });
-      navigate("/login");
-    } catch (err) {
-      setError(err.message || "Failed to reset password");
-    } finally {
-      setLoading(false);
-    }
+    try { await base44.auth.resetPassword({ resetToken, newPassword: password }); window.location.href = '/login'; }
+    catch { setError('Le lien peut être expiré ou déjà utilisé. Vérifiez votre connexion ou demandez un nouveau lien.'); }
+    finally { setLoading(false); }
   };
-
-  if (!resetToken) {
-    return (
-      <AuthLayout
-        icon={AlertTriangle}
-        title="Invalid reset link"
-        subtitle="This password reset link is missing or invalid"
-        footer={
-          <Link to="/forgot-password" className="text-primary font-medium hover:underline">
-            Request a new link
-          </Link>
-        }
-      >
-        <p className="text-sm text-foreground text-center">
-          The link you used appears to be incomplete. Please request a new password reset email.
-        </p>
-      </AuthLayout>
-    );
-  }
-
-  return (
-    <AuthLayout
-      icon={Lock}
-      title="New password"
-      subtitle="Enter your new password below"
-    >
-      {error && (
-        <div className="mb-4 p-3 rounded-lg bg-destructive/10 text-destructive text-sm">
-          {error}
-        </div>
-      )}
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="space-y-2">
-          <Label htmlFor="password">New Password</Label>
-          <div className="relative">
-            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" aria-hidden="true" />
-            <Input
-              id="password"
-              type="password"
-              autoComplete="new-password"
-              autoFocus
-              placeholder="••••••••"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-              className="pl-10 h-12"
-              required
-            />
-          </div>
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="confirm">Confirm Password</Label>
-          <div className="relative">
-            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" aria-hidden="true" />
-            <Input
-              id="confirm"
-              type="password"
-              autoComplete="new-password"
-              placeholder="••••••••"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              className="pl-10 h-12"
-              required
-            />
-          </div>
-        </div>
-        <Button type="submit" className="w-full h-12 font-medium" disabled={loading}>
-          {loading ? (
-            <>
-              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-              Resetting...
-            </>
-          ) : (
-            "Reset password"
-          )}
-        </Button>
-      </form>
-    </AuthLayout>
-  );
+  if (!resetToken) return <AuthLayout icon={AlertTriangle} title="Lien invalide" subtitle="Ce lien de réinitialisation est incomplet ou invalide." footer={<Link to="/forgot-password">Demander un nouveau lien</Link>}><p className="auth-notice">Pour protéger votre compte, utilisez le lien reçu dans votre e-mail de réinitialisation.</p></AuthLayout>;
+  return <AuthLayout icon={LockKeyhole} title="Un nouveau départ" subtitle="Choisissez un nouveau mot de passe pour votre compte Caprice." footer={<Link to="/login">Retour à la connexion</Link>}>
+    {error && <div className="auth-error" role="alert">{error}<br /><Link to="/forgot-password">Demander un nouveau lien</Link></div>}
+    <form className="auth-form" onSubmit={submit} aria-busy={loading}>
+      <AuthField id="password" label="Nouveau mot de passe" type="password" minLength={8} autoComplete="new-password" value={password} onChange={e => setPassword(e.target.value)} disabled={loading} />
+      <AuthField id="confirm-password" label="Confirmer le mot de passe" type="password" autoComplete="new-password" match={password} value={confirm} onChange={e => setConfirm(e.target.value)} disabled={loading} />
+      <button className="auth-primary" disabled={loading}>{loading && <Loader2 size={18} className="animate-spin" />}{loading ? 'Enregistrement…' : 'Enregistrer mon mot de passe'}</button>
+    </form>
+  </AuthLayout>;
 }

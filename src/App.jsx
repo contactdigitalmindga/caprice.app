@@ -15,6 +15,7 @@ const Login = lazy(() => import('@/pages/Login'));
 const Register = lazy(() => import('@/pages/Register'));
 const ForgotPassword = lazy(() => import('@/pages/ForgotPassword'));
 const ResetPassword = lazy(() => import('@/pages/ResetPassword'));
+const Welcome = lazy(() => import('@/pages/Welcome'));
 // Add page imports here
 
 const AuthenticatedApp = () => {
@@ -45,6 +46,7 @@ const AuthenticatedApp = () => {
     <Suspense fallback={<div className="fixed inset-0 flex items-center justify-center"><div className="w-8 h-8 border-4 border-slate-200 border-t-slate-800 rounded-full animate-spin"></div></div>}>
     <Routes>
       {/* Add your page Route elements here */}
+      <Route path="/welcome" element={<Welcome />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
