@@ -21,21 +21,25 @@
       "type": "string"
     }
   },
+  "required": [],
   "rls": {
     "read": {},
     "create": {
       "user_condition": {
-        "role": "admin"
+        "role": "admin",
+        "id": "6a980008224694e817562d89"
       }
     },
     "update": {
       "user_condition": {
-        "role": "admin"
+        "role": "admin",
+        "id": "6a980008224694e817562d89"
       }
     },
     "delete": {
       "user_condition": {
-        "role": "admin"
+        "role": "admin",
+        "id": "6a980008224694e817562d89"
       }
     }
   }
