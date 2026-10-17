@@ -29,6 +29,8 @@
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
     --radius: 0.5rem;
+    --startup-background: #000000;
+    --startup-foreground: #ffffff;
     --auth-black: #100D0B;
     --auth-espresso: #211A15;
     --auth-chocolate: #30251C;
@@ -76,6 +78,8 @@
   }
 
   .dark {
+    --startup-background: #000000;
+    --startup-foreground: #ffffff;
     --auth-black: #100D0B;
     --auth-espresso: #211A15;
     --auth-chocolate: #30251C;
