@@ -57,7 +57,8 @@
         },
         {
           "user_condition": {
-            "role": "admin"
+            "role": "admin",
+            "id": "6a980008224694e817562d89"
           }
         }
       ]
@@ -69,14 +70,16 @@
         },
         {
           "user_condition": {
-            "role": "admin"
+            "role": "admin",
+            "id": "6a980008224694e817562d89"
           }
         }
       ]
     },
     "delete": {
       "user_condition": {
-        "role": "admin"
+        "role": "admin",
+        "id": "6a980008224694e817562d89"
       }
     }
   }
