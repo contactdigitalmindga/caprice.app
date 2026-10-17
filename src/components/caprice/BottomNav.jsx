@@ -1,3 +1,27 @@
-import React,{useState,useEffect}from'react';import{motion}from'framer-motion';import{Home,UtensilsCrossed,CalendarDays,ReceiptText,UserRound}from'lucide-react';import{useCaprice}from'./AppContext';
+import React,{useState,useEffect}from'react';
+import{motion}from'framer-motion';
+import{Home,UtensilsCrossed,CalendarDays,ReceiptText,UserRound}from'lucide-react';
+import{useCaprice}from'@/components/caprice/AppContext';
+import '@/components/caprice/knife-nav.css';
 const n=[['home','Accueil',Home],['menu','Menu',UtensilsCrossed],['reserve','Réserver',CalendarDays],['orders','Commandes',ReceiptText],['profile','Profil',UserRound]];
-export default function BottomNav(){const{tab,switchTab}=useCaprice();const[visible,setVisible]=useState(true);useEffect(()=>{let lastY=window.scrollY,ticking=false;const onScroll=()=>{if(ticking)return;ticking=true;requestAnimationFrame(()=>{const y=window.scrollY;if(y<10)setVisible(true);else if(y>lastY+5)setVisible(false);else if(y<lastY-5)setVisible(true);lastY=y;ticking=false})};window.addEventListener('scroll',onScroll,{passive:true});return()=>window.removeEventListener('scroll',onScroll)},[]);return <motion.nav className="bottom-nav" animate={{y:visible?0:'130%'}} transition={{type:'spring',stiffness:500,damping:32}}>{n.map(([id,l,I])=>{const a=tab===id;return <motion.button key={id} aria-label={l} whileTap={{scale:.82}} transition={{type:'spring',stiffness:500,damping:18}} onClick={()=>switchTab(id)} className={a?'active':''}>{a&&<motion.span layoutId="nav-pill" className="nav-pill" transition={{type:'spring',stiffness:420,damping:30}}/>}<motion.span className="nav-icon" animate={{y:a?-2:0,scale:a?1.12:1}} transition={{type:'spring',stiffness:400,damping:18}}><I size={18}/></motion.span><span className="nav-label">{l}</span></motion.button>})}</motion.nav>;}
+const knife='https://base44.app/api/apps/6a980008224694e817562d88/files/mp/public/6a980008224694e817562d88/98b82de10_caprice-knife-navigation.png';
+export default function BottomNav(){
+  const{tab,switchTab}=useCaprice();
+  const[visible,setVisible]=useState(true);
+  useEffect(()=>{
+    let lastY=window.scrollY,ticking=false;
+    const onScroll=()=>{if(ticking)return;ticking=true;requestAnimationFrame(()=>{const y=window.scrollY;if(y<10)setVisible(true);else if(y>lastY+5)setVisible(false);else if(y<lastY-5)setVisible(true);lastY=y;ticking=false})};
+    window.addEventListener('scroll',onScroll,{passive:true});
+    return()=>window.removeEventListener('scroll',onScroll);
+  },[]);
+  return <motion.nav aria-label="Navigation principale" className="knife-nav-dock" animate={{y:visible?0:'130%'}} transition={{type:'spring',stiffness:500,damping:32}}>
+    <div className="knife-nav-surface">
+      <img src={knife} alt="" width="1130" height="190" decoding="async"/>
+      <button className="knife-nav-logo" aria-label="Accueil CAPRICE" onClick={()=>switchTab('home')}/>
+      <div className="knife-nav-links">{n.map(([id,label,Icon])=><button key={id} className="knife-nav-link" aria-label={label} aria-current={tab===id?'page':undefined} onClick={()=>switchTab(id)}>
+        {tab===id&&<span className="knife-nav-selection"/>}
+        <Icon aria-hidden="true"/><span>{label}</span>
+      </button>)}</div>
+    </div>
+  </motion.nav>;
+}
