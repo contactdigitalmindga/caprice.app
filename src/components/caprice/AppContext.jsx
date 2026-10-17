@@ -4,6 +4,7 @@ import { base44 } from '@/api/base44Client';
 import { toast } from '@/components/ui/use-toast';
 import { hero, heroSlides } from '@/lib/caprice';
 import preloadImages from '@/components/caprice/preloadImages';
+import { preloadProfilePhoto } from '@/components/caprice/profilePhotoCache';
 const C=createContext();
 export const useCaprice=()=>useContext(C);
 const productImages=products=>products.flatMap(p=>[p.image_url,...(p.images||[])]);
@@ -42,7 +43,7 @@ export default function AppContext({children}){
     finally{setLoading(false);}
   };
   useEffect(()=>{prepareApp()},[]);
-  useEffect(()=>{base44.auth.isAuthenticated().then(async(ok)=>{if(ok){try{setUser(await base44.auth.me())}catch{setUser(null)}}}).finally(()=>setUserLoading(false))},[]);
+  useEffect(()=>{base44.auth.isAuthenticated().then(async(ok)=>{if(ok){try{const current=await base44.auth.me();await preloadProfilePhoto(current.profile_photo).catch(()=>null);setUser(current)}catch{setUser(null)}}}).finally(()=>setUserLoading(false))},[]);
   const[favoritePage,setFavoritePage]=useState({next_cursor:null,has_more:false});
   const loadFavorites=async(cursor)=>{
     if(!user)return;
@@ -52,7 +53,7 @@ export default function AppContext({children}){
     setFavoritePage({next_cursor:page.next_cursor,has_more:page.has_more});
   };
   useEffect(()=>{if(user)loadFavorites()},[user?.id]);
-  const refreshUser=async()=>{const current=await base44.auth.me();setUser(current);return current};
+  const refreshUser=async()=>{const current=await base44.auth.me();await preloadProfilePhoto(current.profile_photo).catch(()=>null);setUser(current);return current};
   const refreshProducts=async()=>{const p=await base44.entities.Product.list();setProducts(p);preloadProducts(p)};
   const logout=async()=>{await base44.auth.logout();setUser(null);setScreen('home')};
   useEffect(()=>{sessionStorage.setItem('caprice_auth_cart',JSON.stringify(cart))},[cart]);

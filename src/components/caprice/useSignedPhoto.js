@@ -1,20 +1,16 @@
 import { useState, useEffect } from 'react';
-import { base44 } from '@/api/base44Client';
+import { cachedProfilePhoto, preloadProfilePhoto } from '@/components/caprice/profilePhotoCache';
 
-// Resolves a private file_uri (from UploadPrivateFile) into a temporary
-// displayable URL. Public http(s) URLs pass through unchanged.
 export function useSignedPhoto(fileUri) {
-  const [url, setUrl] = useState(null);
+  const [photo, setPhoto] = useState(() => ({ fileUri, url: cachedProfilePhoto(fileUri) }));
   useEffect(() => {
     let alive = true;
-    if (!fileUri) { setUrl(null); return; }
-    if (/^https?:\/\//.test(fileUri)) { setUrl(fileUri); return; }
-    const resolvePhoto = () => base44.integrations.Core.CreateFileSignedUrl({ file_uri: fileUri, expires_in: 3600 })
-      .then(r => { if (alive) setUrl(r.signed_url); })
-      .catch(() => { if (alive) setUrl(null); });
+    const resolvePhoto = () => preloadProfilePhoto(fileUri)
+      .then(url => { if (alive) setPhoto({ fileUri, url }); })
+      .catch(() => { if (alive) setPhoto({ fileUri, url: null }); });
     resolvePhoto();
     const renewal = setInterval(resolvePhoto, 50 * 60 * 1000);
     return () => { alive = false; clearInterval(renewal); };
   }, [fileUri]);
-  return url;
+  return photo.fileUri === fileUri ? photo.url : cachedProfilePhoto(fileUri);
 }

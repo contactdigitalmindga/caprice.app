@@ -2,7 +2,7 @@ import React from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { useCaprice } from '@/components/caprice/AppContext';
 import '@/components/caprice/startup-screen.css';
-const logo = 'https://media.base44.com/images/public/6a980008224694e817562d88/f994c43ed_download.webp';
+const logo = 'https://media.base44.com/images/public/6a980008224694e817562d88/42d2f3b62_OIP.webp';
 export default function StartupScreen() {
   const { imageProgress, startupError, prepareApp } = useCaprice();
   const reducedMotion = useReducedMotion();
