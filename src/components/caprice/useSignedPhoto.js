@@ -9,10 +9,12 @@ export function useSignedPhoto(fileUri) {
     let alive = true;
     if (!fileUri) { setUrl(null); return; }
     if (/^https?:\/\//.test(fileUri)) { setUrl(fileUri); return; }
-    base44.integrations.Core.CreateFileSignedUrl({ file_uri: fileUri, expires_in: 86400 })
+    const resolvePhoto = () => base44.integrations.Core.CreateFileSignedUrl({ file_uri: fileUri, expires_in: 3600 })
       .then(r => { if (alive) setUrl(r.signed_url); })
       .catch(() => { if (alive) setUrl(null); });
-    return () => { alive = false; };
+    resolvePhoto();
+    const renewal = setInterval(resolvePhoto, 50 * 60 * 1000);
+    return () => { alive = false; clearInterval(renewal); };
   }, [fileUri]);
   return url;
 }
