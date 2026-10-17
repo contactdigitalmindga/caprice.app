@@ -13,6 +13,10 @@
     "display_name": {
       "type": "string",
       "description": "Nom complet fourni par le client lors de son inscription"
+    },
+    "profile_photo": {
+      "type": "string",
+      "description": "Photo de profil du client (URI de fichier prive)"
     }
   },
   "required": [
