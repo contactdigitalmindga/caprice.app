@@ -1,4 +1,4 @@
-import React,{useState}from'react';import{ChevronLeft,ChevronRight}from'lucide-react';import{Image}from'@/components/ui/image';
+import React,{useState}from'react';import{ChevronLeft,ChevronRight}from'lucide-react';import Image from'@/components/caprice/PreloadedImage';
 export default function ImageCarousel({images,alt}){
   const[active,setActive]=useState(0);
   if(!images||images.length===0)return null;

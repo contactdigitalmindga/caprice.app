@@ -17,6 +17,11 @@
     "profile_photo": {
       "type": "string",
       "description": "Photo de profil du client (URI de fichier prive)"
+    },
+    "push_notifications_enabled": {
+      "type": "boolean",
+      "default": false,
+      "description": "Pr\u00e9f\u00e9rence de r\u00e9ception des notifications push, ind\u00e9pendante de la permission du syst\u00e8me"
     }
   },
   "required": [

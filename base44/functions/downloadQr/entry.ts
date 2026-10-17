@@ -4,7 +4,7 @@ export default async function(req: Request): Promise<Response> {
   try {
     const base44 = createClientFromRequest(req);
     const user = await base44.auth.me();
-    if (!user || user.role !== 'admin') return Response.json({ error: 'Forbidden' }, { status: 403 });
+    if (!user || user.role !== 'admin' || user.id !== '6a980008224694e817562d89') return Response.json({ error: 'Forbidden' }, { status: 403 });
     const records = await base44.entities.AppDistribution.list('-updated_date', 1);
     const link = records[0]?.download_url;
     if (!link) return Response.json({ error: 'Adresse non configurée' }, { status: 404 });

@@ -1,4 +1,4 @@
-import React,{useState,useEffect,useCallback}from'react';import{Image}from'@/components/ui/image';import{heroSlides as SLIDES}from'@/lib/caprice';
+import React,{useState,useEffect,useCallback}from'react';import Image from'@/components/caprice/PreloadedImage';import{heroSlides as SLIDES}from'@/lib/caprice';
 
 export default function HeroCarousel(){
   const[active,setActive]=useState(0);
