@@ -1,0 +1,22 @@
+.caprice-profile-window{box-sizing:border-box;width:440px;max-width:100%;max-height:92vh;overflow-y:auto;padding:30px;background:#FAFBFF;border:1px solid #DFE5F0;border-radius:24px;box-shadow:0 22px 60px rgba(22,35,59,.14);display:flex;flex-direction:column;gap:22px;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#16233B;animation:caprice-profile-window-in .42s cubic-bezier(.2,.75,.25,1) both}
+.caprice-profile-window .profile-head{display:flex;align-items:center;justify-content:space-between;gap:16px}
+.caprice-profile-window .profile-head h2{margin:0;font-family:inherit;font-size:25px;line-height:1.2;font-weight:650;letter-spacing:-.035em;color:#16233B}
+.caprice-profile-window .close-button{width:38px;height:38px;flex:none;display:grid;place-items:center;border:1px solid #E4E9F2;border-radius:12px;background:#fff;color:#64718A;cursor:pointer;transition:background .18s,color .18s,box-shadow .18s}
+.caprice-profile-window .close-button:hover{background:#F0F3FA;color:#16233B}
+.caprice-profile-window .close-button:active{background:#E6EBF5}
+.caprice-profile-window .close-button:focus-visible,.caprice-profile-window .photo-button:focus-visible,.caprice-profile-window .save-button:focus-visible{outline:3px solid #AABCF4;outline-offset:3px}
+.caprice-profile-window .photo-area{display:flex;flex-direction:column;align-items:center;gap:12px;padding:4px 0 2px}
+.caprice-profile-window .avatar{width:88px;height:88px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(145deg,#EAF0FC,#DCE5F8);border:3px solid #fff;box-shadow:0 0 0 1px #D9E2F2,0 8px 18px rgba(37,61,112,.1);color:#5670A8}
+.caprice-profile-window .photo-button{height:38px;padding:0 14px;display:flex;align-items:center;justify-content:center;gap:8px;border:1px solid #DCE4F2;border-radius:11px;background:#fff;color:#3459D1;font:600 13px/1 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;cursor:pointer;animation:caprice-profile-photo-breathe 3.6s ease-in-out infinite;transition:background .18s,color .18s,box-shadow .18s}
+.caprice-profile-window .photo-button:hover{background:#F1F4FC;box-shadow:0 3px 10px rgba(52,89,209,.1)}
+.caprice-profile-window .photo-button:active{background:#E8EEFC}
+.caprice-profile-window .photo-note{margin:0;color:#77839A;font-size:12px;line-height:1.45;text-align:center}
+.caprice-profile-window .profile-field{display:flex;flex-direction:column;gap:9px}
+.caprice-profile-window .profile-field label{font-size:13px;line-height:1.3;font-weight:600;color:#42516B}
+.caprice-profile-window .profile-field input{box-sizing:border-box;width:100%;height:50px;padding:0 15px;border:1px solid #D9E1EF;border-radius:13px;background:#fff;color:#16233B;font:500 15px system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;box-shadow:inset 0 1px 2px rgba(22,35,59,.025);transition:border-color .18s,box-shadow .18s}
+.caprice-profile-window .profile-field input:focus{outline:none;border-color:#7894E4;box-shadow:0 0 0 3px rgba(52,89,209,.11)}
+.caprice-profile-window .save-button{width:100%;height:50px;display:flex;align-items:center;justify-content:center;gap:10px;border:0;border-radius:13px;background:#3459D1;color:#fff;font:650 14px system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;letter-spacing:.005em;cursor:pointer;box-shadow:0 7px 15px rgba(52,89,209,.2);transition:background .18s,box-shadow .18s}
+.caprice-profile-window .save-button:hover{background:#294FC8;box-shadow:0 9px 18px rgba(52,89,209,.27)}
+.caprice-profile-window .save-button:active{background:#2345B5;box-shadow:0 3px 8px rgba(52,89,209,.2)}
+@keyframes caprice-profile-window-in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes caprice-profile-photo-breathe{0%,100%{opacity:1}50%{opacity:.78}}
