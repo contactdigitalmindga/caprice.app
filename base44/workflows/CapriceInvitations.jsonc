@@ -1,6 +1,6 @@
 {
-  "name": "Invitations Caprice toutes les deux heures",
-  "description": "G\u00e9n\u00e8re une nouvelle accroche \u00e0 partir de la carte active toutes les deux heures et l\u2019envoie aux utilisateurs, sauf ceux qui ont d\u00e9sactiv\u00e9 leur abonnement. La r\u00e9ception n\u00e9cessite l\u2019autorisation des notifications sur le t\u00e9l\u00e9phone.",
+  "name": "Invitations Caprice toutes les heures",
+  "description": "G\u00e9n\u00e8re une nouvelle accroche \u00e0 partir de la carte active toutes les heures et l\u2019envoie aux utilisateurs, sauf ceux qui ont d\u00e9sactiv\u00e9 leur abonnement. La r\u00e9ception n\u00e9cessite l\u2019autorisation des notifications sur le t\u00e9l\u00e9phone.",
   "trigger": {
     "condition": null,
     "config": {
@@ -10,7 +10,7 @@
       "cron_expression": null,
       "one_time_date": null,
       "timezone": "UTC",
-      "interval_value": 2,
+      "interval_value": 1,
       "interval_unit": "hours",
       "interval_anchor": null,
       "ends_type": "never",
