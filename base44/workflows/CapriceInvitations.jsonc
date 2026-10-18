@@ -1,0 +1,45 @@
+{
+  "name": "Invitations Caprice toutes les deux heures",
+  "description": "G\u00e9n\u00e8re une nouvelle accroche \u00e0 partir de la carte active toutes les deux heures et l\u2019envoie aux utilisateurs, sauf ceux qui ont d\u00e9sactiv\u00e9 leur abonnement. La r\u00e9ception n\u00e9cessite l\u2019autorisation des notifications sur le t\u00e9l\u00e9phone.",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "scheduled",
+      "events": [],
+      "schedule_mode": "interval",
+      "cron_expression": null,
+      "one_time_date": null,
+      "timezone": "UTC",
+      "interval_value": 2,
+      "interval_unit": "hours",
+      "interval_anchor": null,
+      "ends_type": "never",
+      "ends_on_date": null,
+      "ends_after_count": null
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "caprice_invitations",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "send_invitation": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "sendCapriceInvitation",
+            "args": {}
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Cr\u00e9er et envoyer une invitation gourmande",
+            "description": "Nouvelle accroche, d\u00e9sabonnements respect\u00e9s"
+          }
+        }
+      }
+    ]
+  }
+}
