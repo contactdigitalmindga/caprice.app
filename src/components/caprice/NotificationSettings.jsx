@@ -17,7 +17,7 @@ export default function NotificationSettings() {
   };
   return <main className="screen notification-settings"><BackArrow to="profile" /><small>MON COMPTE</small><h1>Paramètres & notifications</h1>
     {userLoading ? <p role="status">Chargement des préférences…</p> : !user ? <section className="settings-card"><p>Connectez-vous pour enregistrer vos préférences de notifications.</p><button className="outline" onClick={goLogin}>Se connecter</button></section> : <section className="settings-card">
-      <Bell aria-hidden="true" /><h2>Les rendez-vous gourmands</h2><p>Une nouvelle invitation à savourer Caprice toutes les heures. L’abonnement est activé par défaut ; vous pouvez le désactiver ici à tout moment.</p>
+      <Bell aria-hidden="true" /><h2>Les rendez-vous gourmands</h2><p>Une nouvelle invitation à savourer Caprice toutes les 12 heures. L’abonnement est activé par défaut ; vous pouvez le désactiver ici à tout moment.</p>
       <div className="settings-toggle"><label htmlFor="push-enabled">Recevoir les invitations Caprice</label><Switch id="push-enabled" checked={user.push_notifications_enabled !== false} onCheckedChange={change} disabled={saving} /></div>
       {saving && <p role="status">Enregistrement…</p>}{saved && <p role="status">Préférence enregistrée. L’autorisation du téléphone reste indépendante.</p>}{error && <p role="alert">{error}</p>}
     </section>}
