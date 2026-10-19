@@ -7,8 +7,10 @@ import preloadImages from '@/components/caprice/preloadImages';
 import { preloadProfilePhoto } from '@/components/caprice/profilePhotoCache';
 const C=createContext();
 export const useCaprice=()=>useContext(C);
-const productImages=products=>products.flatMap(p=>[p.image_url,...(p.images||[])]);
-const preloadProducts=products=>preloadImages(productImages(products));
+const preloadProducts=async products=>{
+  await preloadImages(products.map(p=>p.image_url),undefined,{concurrency:8});
+  await preloadImages(products.flatMap(p=>p.images||[]));
+};
 const PATHS={home:'/',menu:'/menu',cart:'/cart',checkout:'/checkout',track:'/track',reserve:'/reserve',orders:'/orders',reservations:'/reservations',favorites:'/favorites',profile:'/profile',about:'/about',admin:'/admin',addresses:'/account/addresses',payments:'/account/payments',notifications:'/account/notifications',help:'/account/help',faq:'/faq',terms:'/account/terms',privacy:'/account/privacy'};
 const fromPath=p=>{if(!p||p==='/')return'home';const s=p.split('/')[1];return s==='account'?(p.split('/')[2]||'addresses'):s};const TAB_OF={home:'home',menu:'menu',detail:'menu',favorites:'menu',track:'orders',reserve:'reserve',orders:'orders',profile:'profile',reservations:'profile',about:'profile',admin:'profile',addresses:'profile',payments:'profile',notifications:'profile',help:'profile',terms:'profile',privacy:'profile',faq:'profile'};const TAB_BASES={home:'/',menu:'/menu',reserve:'/reserve',orders:'/orders',profile:'/profile'};
 export default function AppContext({children}){
@@ -40,9 +42,12 @@ export default function AppContext({children}){
       const detailId=location.pathname.startsWith('/detail/')?location.pathname.split('/')[2]:null;
       const firstProducts=detailId?p.filter(item=>item.id===detailId):location.pathname==='/menu'?p.slice(0,6):p.filter(item=>item.featured).slice(0,4);
       const firstImages=[...(location.pathname==='/'?[heroSlides[0]||hero]:[]),...firstProducts.map(item=>item.image_url)];
-      await Promise.race([preloadImages(firstImages,setImageProgress),new Promise(resolve=>setTimeout(resolve,1500))]);
+      const firstLoad=preloadImages(firstImages,setImageProgress);
+      // Start the menu photos immediately, without making startup wait for them.
+      preloadProducts(p);
+      await Promise.race([firstLoad,new Promise(resolve=>setTimeout(resolve,1500))]);
       setImageProgress(100);setImagesReady(true);
-      preloadImages([hero,...heroSlides,...productImages(p)]);
+      preloadImages([hero,...heroSlides]);
     }catch{setStartupError('Le menu n’a pas pu être chargé. Vérifiez votre connexion et réessayez.');}
     finally{setLoading(false);}
   };

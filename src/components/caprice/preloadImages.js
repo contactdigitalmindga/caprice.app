@@ -20,11 +20,11 @@ const load = src => {
   promise.then(() => pending.delete(src));
   return promise;
 };
-export default async function preloadImages(sources, onProgress = () => {}) {
+export default async function preloadImages(sources, onProgress = () => {}, { concurrency = 4 } = {}) {
   const urls = [...new Set(sources.filter(Boolean))];
   let cursor = 0, complete = 0;
   onProgress(0);
-  await Promise.all(Array.from({ length: Math.min(4, urls.length) }, async () => {
+  await Promise.all(Array.from({ length: Math.min(concurrency, urls.length) }, async () => {
     while (cursor < urls.length) {
       await load(urls[cursor++]);
       onProgress(Math.round(++complete / urls.length * 100));
