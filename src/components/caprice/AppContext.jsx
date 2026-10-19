@@ -37,13 +37,17 @@ export default function AppContext({children}){
     try{
       const p=await base44.entities.Product.list();
       setProducts(p);
-      await preloadImages([hero,...heroSlides,...productImages(p)],setImageProgress);
-      setImagesReady(true);
+      const detailId=location.pathname.startsWith('/detail/')?location.pathname.split('/')[2]:null;
+      const firstProducts=detailId?p.filter(item=>item.id===detailId):location.pathname==='/menu'?p.slice(0,6):p.filter(item=>item.featured).slice(0,4);
+      const firstImages=[...(location.pathname==='/'?[heroSlides[0]||hero]:[]),...firstProducts.map(item=>item.image_url)];
+      await Promise.race([preloadImages(firstImages,setImageProgress),new Promise(resolve=>setTimeout(resolve,1500))]);
+      setImageProgress(100);setImagesReady(true);
+      preloadImages([hero,...heroSlides,...productImages(p)]);
     }catch{setStartupError('Le menu n’a pas pu être chargé. Vérifiez votre connexion et réessayez.');}
     finally{setLoading(false);}
   };
   useEffect(()=>{prepareApp()},[]);
-  useEffect(()=>{base44.auth.isAuthenticated().then(async(ok)=>{if(ok){try{const current=await base44.auth.me();await preloadProfilePhoto(current.profile_photo).catch(()=>null);setUser(current)}catch{setUser(null)}}}).finally(()=>setUserLoading(false))},[]);
+  useEffect(()=>{base44.auth.isAuthenticated().then(async(ok)=>{if(ok){try{const current=await base44.auth.me();setUser(current);preloadProfilePhoto(current.profile_photo).catch(()=>null)}catch{setUser(null)}}}).finally(()=>setUserLoading(false))},[]);
   const[favoritePage,setFavoritePage]=useState({next_cursor:null,has_more:false});
   const loadFavorites=async(cursor)=>{
     if(!user)return;
