@@ -1,17 +1,15 @@
 {
-  "name": "Invitations Caprice toutes les 12 heures",
-  "description": "G\u00e9n\u00e8re une nouvelle accroche \u00e0 partir de la carte active toutes les 12 heures et l\u2019envoie aux utilisateurs, sauf ceux qui ont d\u00e9sactiv\u00e9 leur abonnement. La r\u00e9ception n\u00e9cessite l\u2019autorisation des notifications sur le t\u00e9l\u00e9phone.",
   "trigger": {
     "condition": null,
     "config": {
       "trigger_type": "scheduled",
       "events": [],
-      "schedule_mode": "interval",
-      "cron_expression": null,
+      "schedule_mode": "recurring",
+      "cron_expression": "0 10,12,15,17,18 * * *",
       "one_time_date": null,
-      "timezone": "UTC",
-      "interval_value": 12,
-      "interval_unit": "hours",
+      "timezone": "Europe/Paris",
+      "interval_value": null,
+      "interval_unit": null,
       "interval_anchor": null,
       "ends_type": "never",
       "ends_on_date": null,
@@ -22,7 +20,7 @@
     "document": {
       "dsl": "1.0.0",
       "name": "caprice_invitations",
-      "version": "1.0",
+      "version": "1.1",
       "namespace": "base44"
     },
     "do": [
@@ -41,5 +39,7 @@
         }
       }
     ]
-  }
+  },
+  "description": "G\u00e9n\u00e8re une nouvelle accroche \u00e0 partir de la carte active chaque jour \u00e0 10h, 12h, 15h, 17h et 18h (heure de Paris) et l\u2019envoie aux utilisateurs abonn\u00e9s. La r\u00e9ception n\u00e9cessite l\u2019autorisation des notifications sur le t\u00e9l\u00e9phone.",
+  "name": "Invitations Caprice \u00e0 10h, 12h, 15h, 17h et 18h"
 }
