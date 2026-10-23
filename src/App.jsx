@@ -8,6 +8,7 @@ import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import ScrollToTop from './components/ScrollToTop';
 import { isIOS } from '@/components/download/device';
+import ThemeProvider from '@/components/ThemeProvider';
 const Caprice = lazy(() => import('@/pages/Caprice'));
 const Ticket = lazy(() => import('@/pages/Ticket'));
 const Download = lazy(() => import('@/pages/Download'));
@@ -71,15 +72,10 @@ function App() {
     if ('serviceWorker' in navigator) navigator.serviceWorker.register('/functions/capriceWorker', { scope: '/' }).catch(console.error);
     return () => manifest.remove();
   }, []);
-  useEffect(() => {
-    const mq = window.matchMedia('(prefers-color-scheme: dark)');
-    const apply = () => { document.documentElement.classList.toggle('dark', mq.matches); document.documentElement.classList.toggle('light', !mq.matches); };
-    apply();
-    mq.addEventListener('change', apply);
-    return () => mq.removeEventListener('change', apply);
-  }, []);
+
 
   return (
+    <ThemeProvider>
     <AuthProvider>
       <QueryClientProvider client={queryClientInstance}>
         <Router>
@@ -89,6 +85,7 @@ function App() {
         <Toaster />
       </QueryClientProvider>
     </AuthProvider>
+    </ThemeProvider>
   )
 }
 
