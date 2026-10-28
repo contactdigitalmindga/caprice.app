@@ -1,7 +1,7 @@
-import React,{useState}from'react';import{ChevronLeft,ChevronRight}from'lucide-react';import Image from'@/components/caprice/PreloadedImage';
+import React,{useState}from'react';import{ChevronLeft,ChevronRight}from'lucide-react';import Image from'@/components/caprice/PreloadedImage';import MenuProductImage from'@/components/caprice/MenuProductImage';
 export default function ImageCarousel({images,alt}){
   const[active,setActive]=useState(0);
-  if(!images||images.length===0)return null;
+  if(!images||images.length===0)return <MenuProductImage alt={alt} className="h-full w-full"/>;
   if(images.length===1)return <Image src={images[0]} alt={alt} loading="eager" className="h-full w-full object-cover"/>;
   const go=d=>setActive(a=>Math.max(0,Math.min(images.length-1,a+d)));
   const arrow={position:'absolute',top:'50%',transform:'translateY(-50%)',width:40,height:40,borderRadius:20,display:'grid',placeItems:'center',background:'rgba(255,255,255,.9)',color:'#211a15',boxShadow:'0 2px 10px rgba(0,0,0,.25)',zIndex:5,border:'none',cursor:'pointer'};

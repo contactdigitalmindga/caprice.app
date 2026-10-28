@@ -37,7 +37,8 @@ export default function AppContext({children}){
   const prepareApp=async()=>{
     setLoading(true);setImagesReady(false);setStartupError('');
     try{
-      const p=await base44.entities.Product.list();
+      const page=await base44.entities.Product.filter({active:true},{sort:'price',limit:200});
+      const p=page.items;
       setProducts(p);
       const detailId=location.pathname.startsWith('/detail/')?location.pathname.split('/')[2]:null;
       const firstProducts=detailId?p.filter(item=>item.id===detailId):location.pathname==='/menu'?p.slice(0,6):p.filter(item=>item.featured).slice(0,4);
@@ -57,13 +58,15 @@ export default function AppContext({children}){
   const loadFavorites=async(cursor)=>{
     if(!user)return;
     const page=await base44.entities.Favorite.filter({created_by_id:user.id},{sort:'-created_date',limit:50,...(cursor?{cursor}:{})});
-    const items=page.items.map(f=>({...f,id:f.product_id,name:f.product_name}));
+    const productPage=page.items.length?await base44.entities.Product.filter({id:{$in:page.items.map(f=>f.product_id)},active:true},{limit:50}):{items:[]};
+    const byId=new Map(productPage.items.map(p=>[p.id,p]));
+    const items=page.items.map(f=>byId.get(f.product_id)).filter(Boolean);
     setFav(previous=>cursor?[...previous,...items]:items);
     setFavoritePage({next_cursor:page.next_cursor,has_more:page.has_more});
   };
   useEffect(()=>{if(user)loadFavorites()},[user?.id]);
   const refreshUser=async()=>{const current=await base44.auth.me();await preloadProfilePhoto(current.profile_photo).catch(()=>null);setUser(current);return current};
-  const refreshProducts=async()=>{const p=await base44.entities.Product.list();setProducts(p);preloadProducts(p)};
+  const refreshProducts=async()=>{const page=await base44.entities.Product.filter({active:true},{sort:'price',limit:200});setProducts(page.items);preloadProducts(page.items)};
   const logout=async()=>{await base44.auth.logout();setUser(null);setScreen('home')};
   useEffect(()=>{sessionStorage.setItem('caprice_auth_cart',JSON.stringify(cart))},[cart]);
   const goLogin=()=>navigate('/login');
